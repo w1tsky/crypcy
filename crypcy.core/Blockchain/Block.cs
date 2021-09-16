@@ -11,7 +11,6 @@ public class Block
         public string Hash { get; set; }
         public string Data { get; set; }     
 
-
         public Block(string previousHash, string data)
         {
             Index = 0;
@@ -20,8 +19,6 @@ public class Block
             Data = data.ToString();
             Hash = CalculateHash();
         }
-
-
 
         public  string GetStringForHash()
         {
@@ -33,7 +30,6 @@ public class Block
 
             return data;
         }
-
 
         public string CalculateHash()
         {

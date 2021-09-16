@@ -4,15 +4,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using witskyNet;
+using crypcy.shared;
 
 public class Client
 {
-    UdpClient clientUdp;
+    UdpClient ClientUDP;
     public string Message { get; set; }
     public string RemoteAdress { get; set; }
     public int RemotePort { get; set; }
-    public ClientInfo LocalClientInfo = new ClientInfo();
+    public PeerInfo LocalClientInfo = new PeerInfo();
     public event EventHandler<string> OnResultsUpdate;
 
     public Client(IPEndPoint serverEndpoint)
@@ -33,13 +33,13 @@ public class Client
 
     public void SendMessage(string message, IPEndPoint EP)
     {
-        clientUdp = new UdpClient();
+        ClientUDP = new UdpClient();
         try
         {
             while(true)
             {
                 byte[] data = Encoding.Unicode.GetBytes(message);
-                clientUdp.Send(data, data.Length, EP); // отправка
+                ClientUDP.Send(data, data.Length, EP); // отправка
             }
         }
         catch (Exception ex)
@@ -48,7 +48,7 @@ public class Client
         }
         finally
         {
-            clientUdp.Close();
+            ClientUDP.Close();
         }
     }
 
@@ -56,14 +56,14 @@ public class Client
     public void SendMessageUDP(IPEndPoint EP)
     {
 
-        clientUdp = new UdpClient();
+        ClientUDP = new UdpClient();
         
         byte[] data = JsonSerializer.SerializeToUtf8Bytes(LocalClientInfo);
 
         try
         {
             if (data != null)
-                clientUdp.Send(data, data.Length, EP);
+                ClientUDP.Send(data, data.Length, EP);
         }
         catch (Exception e)
         {

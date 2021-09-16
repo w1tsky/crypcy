@@ -15,12 +15,10 @@ public class Blockchain
         AddGenesisBlock();
     }
 
-
     public void InitializeChain()
     {
         Chain = new ObservableCollection<Block>();
     }
-
 
     public Block CreateGenesisBlock()
     {
