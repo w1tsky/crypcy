@@ -26,6 +26,9 @@ namespace crypcy.core
         static void Main(string[] args)
         {          
 
+            IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("18.184.11.10"), 23555);
+            Client client = new Client(serverEndpoint);
+
             fileName = "blockchains.json";
             filePath = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
             if(File.Exists(filePath))

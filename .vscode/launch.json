@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/crypcy.stun/bin/Debug/net5.0/crypcy.stun.dll",
+            "program": "${workspaceFolder}/crypcy.core/bin/Debug/net5.0/crypcy.core.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/crypcy.stun",
+            "cwd": "${workspaceFolder}/crypcy.core",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

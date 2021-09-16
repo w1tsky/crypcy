@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/crypcy.stun/crypcy.stun.csproj",
+                "${workspaceFolder}/crypcy.core/crypcy.core.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/crypcy.stun/crypcy.stun.csproj",
+                "${workspaceFolder}/crypcy.core/crypcy.core.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/crypcy.stun/crypcy.stun.csproj",
+                "${workspaceFolder}/crypcy.core/crypcy.core.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

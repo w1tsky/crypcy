@@ -18,6 +18,10 @@ public class Client
     public Client(IPEndPoint serverEndpoint)
     {
 
+        // ClientUDP.AllowNatTraversal(true);
+        // ClientUDP.Client.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+        // ClientUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
         LocalClientInfo.Name = System.Environment.MachineName;
         LocalClientInfo.ConnectionType = ConnectionTypes.Unknown;
         LocalClientInfo.ID = DateTime.Now.Ticks;
@@ -28,7 +32,7 @@ public class Client
             LocalClientInfo.InternalAddresses.Add(IP);
 
         // SendMessage(Message, RemoteAdress, RemotePort);
-        SendMessageUDP(serverEndpoint);
+        SendMessageUDP(LocalClientInfo.Simplified(), serverEndpoint);
     }
 
     public void SendMessage(string message, IPEndPoint EP)
@@ -53,12 +57,13 @@ public class Client
     }
 
 
-    public void SendMessageUDP(IPEndPoint EP)
+    public void SendMessageUDP(IPeer Item, IPEndPoint EP)
     {
+        Item.ID = LocalClientInfo.ID;
 
         ClientUDP = new UdpClient();
         
-        byte[] data = JsonSerializer.SerializeToUtf8Bytes(LocalClientInfo);
+        byte[] data = PeerConverter.PeerToByteArray(LocalClientInfo);
 
         try
         {
