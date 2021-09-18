@@ -57,13 +57,17 @@ public class Client
     }
 
 
-    public void SendMessageUDP(IPeer Item, IPEndPoint EP)
+    public void SendMessageUDP(IPeerItem Item, IPEndPoint EP)
     {
         Item.ID = LocalClientInfo.ID;
 
         ClientUDP = new UdpClient();
-        
+
+        string jsonStr = JsonSerializer.Serialize<PeerInfo>(LocalClientInfo);
+        System.Console.WriteLine(jsonStr);
         byte[] data = PeerConverter.PeerToByteArray(LocalClientInfo);
+        string str =JsonSerializer.Serialize<IPeerItem>(PeerConverter.ByteArrayToPeer(data)); 
+        System.Console.WriteLine(str);
 
         try
         {
