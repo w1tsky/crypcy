@@ -57,13 +57,13 @@ namespace crypcy.stun
 
                 if (ReceivedBytes != null)
                 {
-                    IPeer Item = ReceivedBytes.ByteArrayToPeer();
+                    IPeerItem Item = ReceivedBytes.ByteArrayToPeer();
                     ProcessItem(Item, ProtocolType.Udp, UDPEndPoint);
                 }
             }
         }
 
-        static void ProcessItem(IPeer Item, ProtocolType Protocol, IPEndPoint EP = null) //, TcpClient tcp = null)
+        static void ProcessItem(IPeerItem Item, ProtocolType Protocol, IPEndPoint EP = null) //, TcpClient tcp = null)
         {
             if (Item.GetType() == typeof(PeerInfo))
             {
@@ -143,7 +143,7 @@ namespace crypcy.stun
         //     }
         // }
 
-        static void SendUDP(IPeer Item, IPEndPoint EP)
+        static void SendUDP(IPeerItem Item, IPEndPoint EP)
         {
             byte[] Bytes = Item.PeerToByteArray();
             UDP.Send(Bytes, Bytes.Length, UDPEndPoint);
@@ -158,7 +158,7 @@ namespace crypcy.stun
         //         SendTCP(Item, peer.tcp);
         // }
 
-        static void BroadcastUDP(IPeer Item)
+        static void BroadcastUDP(IPeerItem Item)
         {
             foreach (PeerInfo peer in Peers)
                 SendUDP(Item, peer.ExternalEndpoint);

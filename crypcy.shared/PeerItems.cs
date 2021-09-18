@@ -3,7 +3,7 @@ using System;
 namespace crypcy.shared
 {
     [Serializable]
-    public class Message : IPeer
+    public class Message : IPeerItem
     {
         public long ID { get; set; }
 
@@ -21,7 +21,7 @@ namespace crypcy.shared
     }
 
     [Serializable]
-    public class Req : IPeer
+    public class Req : IPeerItem
     {
         public long ID { get; set; }
         public long RecipientID { get; set; }       

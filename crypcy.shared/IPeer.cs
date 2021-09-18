@@ -1,6 +1,6 @@
 namespace crypcy.shared
 {
-    public interface IPeer
+    public interface IPeerItem
     {
         long ID { get; set; }        
     }

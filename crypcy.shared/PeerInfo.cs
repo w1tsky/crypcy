@@ -7,7 +7,7 @@ using System.Reflection;
 namespace crypcy.shared
 {
     public enum ConnectionTypes { Unknown, LAN, WAN }
-    public class PeerInfo : IPeer
+    public class PeerInfo : IPeerItem
     {
         public string Name { get; set; }
         public long ID { get; set; }
@@ -46,7 +46,7 @@ namespace crypcy.shared
                 Name = this.Name,
                 ID = this.ID,
                 InternalEndpoint = this.InternalEndpoint,
-                ExternalEndpoint = this.ExternalEndpoint                                
+                ExternalEndpoint = this.ExternalEndpoint                        
             };
         }
     }
