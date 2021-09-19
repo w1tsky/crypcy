@@ -12,11 +12,7 @@ namespace crypcy.core
     class Program
     {
 
-        static string remoteAddress; // хост для отправки данных
-        static int remotePort; // порт для отправки данных
-        static int localPort; // локальный порт для прослушивания входящих подключений
         static List<Blockchain> blockchains = new List<Blockchain>();
-
         static string chainName;
 
         static string fileName;
@@ -50,6 +46,8 @@ namespace crypcy.core
                 }
                 File.CreateText(filePath);
             }
+
+            e:  System.Console.WriteLine("Введите 'exit' чтобы выйти");
            
             System.Console.WriteLine("Введите комманду");
             System.Console.WriteLine("1: Сервер");
@@ -58,6 +56,18 @@ namespace crypcy.core
             System.Console.WriteLine("4: Добавить блок в цепочку");
             System.Console.WriteLine("5: Просмотреть цепочку");
             System.Console.WriteLine("6: Список цепочек");
+            
+
+            if (Console.ReadLine().ToUpper() == "EXIT")
+            {
+                Console.WriteLine("Shutting down...");            
+                Environment.Exit(0);
+            }
+            else
+            {
+                goto e;
+            }
+
             
             bool done = false;
 
@@ -82,8 +92,8 @@ namespace crypcy.core
                         case 1:
                             Console.WriteLine("Сервер:");
                             Console.WriteLine("Введите порт для прослушивания:");
-                            localPort = Int32.Parse(Console.ReadLine());
-                            Server server = new Server(localPort);
+                            // localPort = Int32.Parse(Console.ReadLine());
+                            // Server server = new Server(localPort);
                             break;
                         case 2:
                             Console.WriteLine("Клиент:");

@@ -7,14 +7,13 @@ namespace crypcy.shared
     {
         public static byte[] PeerToByteArray(this IPeerItem peerInfo)
         {
-            byte[] data = JsonSerializer.SerializeToUtf8Bytes(peerInfo);
-            return data;
+            return JsonSerializer.SerializeToUtf8Bytes(peerInfo);
         }
         
         public static IPeerItem ByteArrayToPeer(this byte[] bytes)
         {
             string jsonStr = Encoding.UTF8.GetString(bytes);
-            return JsonSerializer.Deserialize<PeerInfo>(jsonStr);
+            return JsonSerializer.Deserialize<IPeerItem>(jsonStr);        
         }
     }
 }

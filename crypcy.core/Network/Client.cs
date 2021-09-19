@@ -8,7 +8,7 @@ using crypcy.shared;
 
 public class Client
 {
-    UdpClient ClientUDP;
+    UdpClient ClientUDP= new UdpClient();
     public string Message { get; set; }
     public string RemoteAdress { get; set; }
     public int RemotePort { get; set; }
@@ -32,42 +32,21 @@ public class Client
             LocalClientInfo.InternalAddresses.Add(IP);
 
         // SendMessage(Message, RemoteAdress, RemotePort);
-        SendMessageUDP(LocalClientInfo.Simplified(), serverEndpoint);
+        SendMessageUDP( serverEndpoint);
+        
     }
 
-    public void SendMessage(string message, IPEndPoint EP)
+    public void SendMessageUDP(IPEndPoint EP)
     {
-        ClientUDP = new UdpClient();
-        try
-        {
-            while(true)
-            {
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                ClientUDP.Send(data, data.Length, EP); // отправка
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            ClientUDP.Close();
-        }
-    }
+        
+        // tem.ID = LocalClientInfo.ID;
+        byte[] data = JsonSerializer.SerializeToUtf8Bytes<PeerInfo>(LocalClientInfo);
 
+        string jsonStr = Encoding.UTF8.GetString(data);
 
-    public void SendMessageUDP(IPeerItem Item, IPEndPoint EP)
-    {
-        Item.ID = LocalClientInfo.ID;
-
-        ClientUDP = new UdpClient();
-
-        string jsonStr = JsonSerializer.Serialize<PeerInfo>(LocalClientInfo);
         System.Console.WriteLine(jsonStr);
-        byte[] data = PeerConverter.PeerToByteArray(LocalClientInfo);
-        string str =JsonSerializer.Serialize<IPeerItem>(PeerConverter.ByteArrayToPeer(data)); 
-        System.Console.WriteLine(str);
+        // JsonSerializer.Deserialize<PeerInfo>(jsonStr);
+
 
         try
         {
