@@ -21,6 +21,7 @@ namespace crypcy.core
 
         static string fileName;
         static string filePath;
+        static string dirPath;
         static string jsonString;
         
         static void Main(string[] args)
@@ -30,7 +31,8 @@ namespace crypcy.core
             Client client = new Client(serverEndpoint);
 
             fileName = "blockchains.json";
-            filePath = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+            dirPath = Path.Combine(Environment.CurrentDirectory, @"Data\");
+            filePath = Path.Combine(dirPath, fileName);
             if(File.Exists(filePath))
             {
                  jsonString = File.ReadAllText(filePath);
@@ -42,6 +44,10 @@ namespace crypcy.core
             }
             else
             {
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
                 File.CreateText(filePath);
             }
            
