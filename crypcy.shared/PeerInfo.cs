@@ -14,6 +14,9 @@ namespace crypcy.shared
         public IPEndPoint ExternalEndpoint { get; set; }
         public IPEndPoint InternalEndpoint { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
+        public PeerItemType peerItemType { get; set; }
+        
+
         public List<IPAddress> InternalAddresses = new List<IPAddress>(); 
 
         [NonSerialized]
@@ -23,6 +26,8 @@ namespace crypcy.shared
 
         public bool Update(PeerInfo peer)
         {
+            peerItemType = PeerItemType.PeerInfo;
+
             if (ID == peer.ID)
             {
                 foreach (PropertyInfo P in peer.GetType().GetProperties())
@@ -46,7 +51,8 @@ namespace crypcy.shared
                 Name = this.Name,
                 ID = this.ID,
                 InternalEndpoint = this.InternalEndpoint,
-                ExternalEndpoint = this.ExternalEndpoint                        
+                ExternalEndpoint = this.ExternalEndpoint,
+                peerItemType = PeerItemType.PeerInfo                   
             };
         }
     }

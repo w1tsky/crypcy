@@ -11,7 +11,7 @@ namespace crypcy.stun
     class Program
     {
 
-        static int Port = 50;
+        static int Port = 23555;
 
         static IPEndPoint UDPEndPoint = new IPEndPoint(IPAddress.Any, Port);
         static UdpClient UDP = new UdpClient(UDPEndPoint);
