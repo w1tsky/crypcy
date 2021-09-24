@@ -2,33 +2,48 @@ using System;
 
 namespace crypcy.shared
 {
+    public enum NotificationsTypes { ServerShutdown, Disconnected }
+
     [Serializable]
-    public class Message : IPeerItem
+    public class Notification : PeerItem
     {
-        public long ID { get; set; }
 
-        public string From { get; set; }
-        public string To { get; set; }
-        public string Content { get; set; }
-        public long RecipientID { get; set; }        
+        public NotificationsTypes Type { get; set; }
+        public object Tag { get; set; }
 
-        public Message(string from, string to, string content)
+        public Notification(NotificationsTypes _Type, object _Tag)
         {
-            From = from;
-            To = to;
-            Content = content;
+            Type = _Type;
+            Tag = _Tag;
         }
     }
 
     [Serializable]
-    public class Req : IPeerItem
+    public class Message : PeerItem
     {
-        public long ID { get; set; }
-        public long RecipientID { get; set; }       
 
+        public string From { get; set; }
+        public string To { get; set; }
+        public string Content { get; set; }
+        public long RecipientID { get; set; }    
+
+        public Message(string from, string to, string content)
+        {
+            PeerItemType = PeerItemType.Message;
+            From = from;
+            To = to;
+            Content = content;    
+        }
+    }
+
+    [Serializable]
+    public class Req : PeerItem
+    {
+        public long RecipientID { get; set; }       
         public Req(long Sender_ID, long Recipient_ID)
         {
             ID = Sender_ID;
+            PeerItemType = PeerItemType.Req;
             RecipientID = Recipient_ID;
         }
     }  
