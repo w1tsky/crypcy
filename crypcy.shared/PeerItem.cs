@@ -7,7 +7,7 @@ namespace crypcy.shared
         Req,
         Notification
     }
-    public abstract class PeerItem
+    public class PeerItem
     {
         public long ID { get; set; } 
         public PeerItemType PeerItemType { get; set; }
