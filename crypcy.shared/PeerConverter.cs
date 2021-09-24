@@ -5,32 +5,29 @@ namespace crypcy.shared
 {
     public static class PeerConverter
     {
-        public static byte[] PeerToByteArray(this IPeerItem peerInfo)
+        public static byte[] PeerToByteArray(this PeerItem peerItem)
         {
 
-            return JsonSerializer.SerializeToUtf8Bytes(peerInfo);
+            return JsonSerializer.SerializeToUtf8Bytes(peerItem);
         }
 
-        public static IPeerItem ByteArrayToPeer(this byte[] bytes)
+        public static PeerItem ByteArrayToPeer(this byte[] bytes)
         {
             string jsonStr = Encoding.UTF8.GetString(bytes);
-            IPeerItem item = JsonSerializer.Deserialize<IPeerItem>(jsonStr);
+            PeerItem item = JsonSerializer.Deserialize<PeerItem>(jsonStr);
 
-            if(item.peerItemType == PeerItemType.PeerInfo)
+            switch(item.PeerItemType)
             {
-                return JsonSerializer.Deserialize<PeerInfo>(jsonStr);
-            }
-            else if(item.peerItemType == PeerItemType.Message)
-            {
-                return JsonSerializer.Deserialize<Message>(jsonStr);
-            }
-            else if(item.peerItemType == PeerItemType.Req)
-            {
-                return JsonSerializer.Deserialize<Req>(jsonStr);
-            }
-            else
-            {
-                return JsonSerializer.Deserialize<IPeerItem>(jsonStr);
+                case PeerItemType.PeerInfo:
+                    return JsonSerializer.Deserialize<PeerInfo>(jsonStr);
+                case PeerItemType.Message:
+                    return JsonSerializer.Deserialize<Message>(jsonStr);
+                case PeerItemType.Req:
+                    return JsonSerializer.Deserialize<Req>(jsonStr);
+                case PeerItemType.Notification:
+                    return JsonSerializer.Deserialize<Notification>(jsonStr);
+                default:
+                    return JsonSerializer.Deserialize<PeerItem>(jsonStr);
             }
         }
     }

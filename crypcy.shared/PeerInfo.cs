@@ -7,26 +7,22 @@ using System.Reflection;
 namespace crypcy.shared
 {
     public enum ConnectionTypes { Unknown, LAN, WAN }
-    public class PeerInfo : IPeerItem
+    public class PeerInfo : PeerItem
     {
         public string Name { get; set; }
-        public long ID { get; set; }
         public IPEndPoint ExternalEndpoint { get; set; }
         public IPEndPoint InternalEndpoint { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
-        public PeerItemType peerItemType { get; set; }
-        
 
         public List<IPAddress> InternalAddresses = new List<IPAddress>(); 
-
         [NonSerialized]
-        public TcpClient tcp;
+        public TcpClient PeerTCP;
         [NonSerialized] 
         public bool Initialized;
 
-        public bool Update(PeerInfo peer)
+        public bool Update(PeerInfo peer) 
         {
-            peerItemType = PeerItemType.PeerInfo;
+            PeerItemType = PeerItemType.PeerInfo;
 
             if (ID == peer.ID)
             {
@@ -40,7 +36,6 @@ namespace crypcy.shared
                     InternalAddresses.AddRange(peer.InternalAddresses);
                 }
             }
-
             return (ID == peer.ID);
         }
 
@@ -48,13 +43,12 @@ namespace crypcy.shared
         {
             return new  PeerInfo()
             {
-                Name = this.Name,
                 ID = this.ID,
+                PeerItemType = PeerItemType.PeerInfo,  
+                Name = this.Name,
                 InternalEndpoint = this.InternalEndpoint,
-                ExternalEndpoint = this.ExternalEndpoint,
-                peerItemType = PeerItemType.PeerInfo                   
+                ExternalEndpoint = this.ExternalEndpoint            
             };
         }
     }
-
 }

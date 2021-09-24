@@ -16,13 +16,17 @@ namespace crypcy.stun
         static IPEndPoint UDPEndPoint = new IPEndPoint(IPAddress.Any, Port);
         static UdpClient UDP = new UdpClient(UDPEndPoint);
 
+        static IPEndPoint TCPEndPoint = new IPEndPoint(IPAddress.Any, Port);
+        static TcpListener TCP = new TcpListener(TCPEndPoint);
         static List<PeerInfo> Peers = new List<PeerInfo>();
 
         static void Main(string[] args)
         {
+            Thread ThreadTCP = new Thread(new ThreadStart(TCPListen));
             Thread ThreadUDP = new Thread(new ThreadStart(UDPListen));
 
             ThreadUDP.Start();
+            ThreadTCP.Start();
 
             e:  Console.WriteLine("Type 'exit' to shutdown the server");
 
@@ -57,111 +61,176 @@ namespace crypcy.stun
 
                 if (ReceivedBytes != null)
                 {
-                    IPeerItem Item = ReceivedBytes.ByteArrayToPeer();
-                    ProcessItem(Item, ProtocolType.Udp, UDPEndPoint);
+                    PeerItem peerItem = ReceivedBytes.ByteArrayToPeer();
+                    ProcessItem(peerItem, ProtocolType.Udp, UDPEndPoint);
                 }
             }
         }
 
-        static void ProcessItem(IPeerItem Item, ProtocolType Protocol, IPEndPoint EP = null) //, TcpClient tcp = null)
+
+        static void TCPListen()
         {
-            if (Item.GetType() == typeof(PeerInfo))
+            TCP.Start();
+
+            Console.WriteLine("TCP Listener Started");
+
+            while (true)
             {
-                PeerInfo peer = Peers.FirstOrDefault(x => x.ID == ((PeerInfo)Item).ID);
+                try
+                {
+                    TcpClient NewPeer = TCP.AcceptTcpClient();
+
+                    Action<object> ProcessData = new Action<object>(delegate (object _peer)
+                    {
+                        TcpClient Peer = (TcpClient)_peer;
+                        Peer.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);                      
+
+                        byte[] Data = new byte[4096];
+                        int BytesRead = 0;
+
+                        while (Peer.Connected)
+                        {
+                            try
+                            {
+                                BytesRead = Peer.GetStream().Read(Data, 0, Data.Length);                             
+                            }
+                            catch
+                            {
+                                Disconnect(Peer);
+                            }
+
+                            if (BytesRead == 0)
+                                break;
+                            else if (Peer.Connected)
+                            {
+                                PeerItem peerItem = Data.ByteArrayToPeer();
+                                ProcessItem(peerItem, ProtocolType.Tcp, null, Peer);
+                            }
+                        }
+
+                        Disconnect(Peer);                     
+                    });
+
+                    Thread ThreadProcessData = new Thread(new ParameterizedThreadStart(ProcessData));
+                    ThreadProcessData.Start(NewPeer);
+                }
+                catch (Exception ex)
+                {
+                    Console.Write("TCP Error: {0}", ex.Message);
+                }
+            }
+        }
+
+        static void Disconnect(TcpClient peerTCP)
+        {
+            PeerInfo peerInfo = Peers.FirstOrDefault(x => x.PeerTCP == peerTCP);
+
+            if (peerInfo != null)
+            {
+                Peers.Remove(peerInfo);               
+                Console.WriteLine("Client Disconnected {0}", peerTCP.Client.RemoteEndPoint.ToString());
+                peerTCP.Close();
+
+                BroadcastTCP(new Notification(NotificationsTypes.Disconnected, peerInfo.ID));
+            }
+        }
+
+        static void ProcessItem(PeerItem peerItem, ProtocolType Protocol, IPEndPoint EP = null, TcpClient peerTCP = null)
+        {
+            if (peerItem.GetType() == typeof(PeerInfo))
+            {
+                PeerInfo peer = Peers.FirstOrDefault(x => x.ID == ((PeerInfo)peerItem).ID);
 
                 if (peer == null)
                 {
-                    peer = (PeerInfo)Item;
+                    peer = (PeerInfo)peerItem;
                     Peers.Add(peer);
 
                     if (EP != null)
                         Console.WriteLine("Client Added: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
-                   // else if (tcp != null)
-                   //     Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)tcp.Client.RemoteEndPoint).Address, ((IPEndPoint)tcp.Client.RemoteEndPoint).Port, peer.Name);
+                   else if (peerTCP != null)
+                       Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
                 else
                 {
-                    peer.Update((PeerInfo)Item);
+                    peer.Update((PeerInfo)peerItem);
 
                     if (EP != null)
                         Console.WriteLine("Client Updated: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
-                  //  else if (tcp != null)
-                  //      Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)tcp.Client.RemoteEndPoint).Address, ((IPEndPoint)tcp.Client.RemoteEndPoint).Port, peer.Name);
+                   else if (peerTCP != null)
+                       Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
 
                 if (EP != null)
                     peer.ExternalEndpoint = EP;
 
-                //if (tcp != null)
-                //     peer.tcp = tcp;
+                if (peerTCP != null)
+                    peer.PeerTCP = peerTCP;
 
-                //BroadcastTCP(peer);
+                BroadcastTCP(peer);
 
                 if (!peer.Initialized)
                 {
                     if (peer.ExternalEndpoint != null & Protocol == ProtocolType.Udp)
                         SendUDP(new Message("Server", peer.Name, "UDP Communication Test"), peer.ExternalEndpoint);
 
-                //    if (peer.Client != null & Protocol == ProtocolType.Tcp)
-                //        SendTCP(new Message("Server", peer.Name, "TCP Communication Test"), peer.Client);
+                   if (peer.PeerTCP != null & Protocol == ProtocolType.Tcp)
+                       SendTCP(new Message("Server", peer.Name, "TCP Communication Test"), peer.PeerTCP);
 
-                    // if (peer.tcp != null & peer.ExternalEndpoint != null)
-                    // {
-                    //     foreach (PeerInfo p in Peers)                                          
-                    //         SendUDP(p, peer.ExternalEndpoint);                       
+                    if (peer.PeerTCP != null & peer.ExternalEndpoint != null)
+                    {
+                        foreach (PeerInfo p in Peers)                                          
+                            SendUDP(p, peer.ExternalEndpoint);                       
 
-                    //     peer.Initialized = true;
-                    // }
+                        peer.Initialized = true;
+                    }
                 }
             }
 
 
-            // else if (Item.GetType() == typeof(Message))
-            // {
-            //     Console.WriteLine("Message from {0}:{1}: {2}", UDPEndPoint.Address, UDPEndPoint.Port, ((Message)Item).Content);
-            // }           
-            // else if (Item.GetType() == typeof(Req))
-            // {
-            //     Req R = (Req)Item;
+            else if (peerItem.GetType() == typeof(Message))
+            {
+                Console.WriteLine("Message from {0}:{1}: {2}", UDPEndPoint.Address, UDPEndPoint.Port, ((Message)peerItem).Content);
+            }           
+            else if (peerItem.GetType() == typeof(Req))
+            {
+                Req R = (Req)peerItem;
 
-            //     PeerInfo peer = Peers.FirstOrDefault(x => x.ID == R.RecipientID);
+                PeerInfo peer = Peers.FirstOrDefault(x => x.ID == R.RecipientID);
 
-            //     if (peer != null)
-            //         SendTCP(R, peer.tcp);
-            // }            
+                if (peer != null)
+                    SendTCP(R, peer.PeerTCP);
+            }            
         }
 
 
-        // static void SendTCP(IPeer Item, TcpClient tcp)
-        // {
-        //     if (tcp != null && tcp.Connected)
-        //     {
-        //         byte[] Data = Item.PeerToByteArray();
-
-        //         NetworkStream NetStream = tcp.GetStream();
-        //         NetStream.Write(Data, 0, Data.Length);            
-        //     }
-        // }
-
-        static void SendUDP(IPeerItem Item, IPEndPoint EP)
+        static void SendTCP(PeerItem peerItem, TcpClient peerTCP)
         {
-            byte[] Bytes = Item.PeerToByteArray();
+            if (peerTCP != null && peerTCP.Connected)
+            {
+                byte[] Data = peerItem.PeerToByteArray();
+
+                NetworkStream NetStream = peerTCP.GetStream();
+                NetStream.Write(Data, 0, Data.Length);            
+            }
+        }
+
+        static void SendUDP(PeerItem peerItem, IPEndPoint EP)
+        {
+            byte[] Bytes = peerItem.PeerToByteArray();
             UDP.Send(Bytes, Bytes.Length, UDPEndPoint);
         }
 
+        static void BroadcastTCP(PeerItem peerItem)
+        {
+            foreach (PeerInfo peer in Peers.Where(x => x.PeerTCP != null))
+                SendTCP(peerItem, peer.PeerTCP);
+        }
 
-
-
-        // static void BroadcastTCP(IPeer Item)
-        // {
-        //     foreach (PeerInfo peer in Peers.Where(x => x.tcp != null))
-        //         SendTCP(Item, peer.tcp);
-        // }
-
-        static void BroadcastUDP(IPeerItem Item)
+        static void BroadcastUDP(PeerItem peerItem)
         {
             foreach (PeerInfo peer in Peers)
-                SendUDP(Item, peer.ExternalEndpoint);
+                SendUDP(peerItem, peer.ExternalEndpoint);
         }       
     }
 }
