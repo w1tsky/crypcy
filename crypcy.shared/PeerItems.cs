@@ -46,5 +46,25 @@ namespace crypcy.shared
             PeerItemType = PeerItemType.Req;
             RecipientID = Recipient_ID;
         }
-    }  
+    } 
+
+    [Serializable]
+    public class Ack : PeerItem
+    {
+        public long RecipientID { get; set; }
+        public bool Responce { get; set; }
+
+        public Ack(long Sender_ID)
+        {
+            ID = Sender_ID;
+        }
+    }
+
+    [Serializable]
+    public class KeepAlive : PeerItem
+    {
+        public long ID { get; set; }
+    } 
+
+
 }

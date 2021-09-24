@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using crypcy.shared;
 
 namespace crypcy.core
 {
@@ -24,7 +25,7 @@ namespace crypcy.core
         {          
 
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("18.184.11.10"), 23555);
-            Client client = new Client(serverEndpoint);
+            Peer peer = new Peer(serverEndpoint);
 
             fileName = "blockchains.json";
             dirPath = Path.Combine(Environment.CurrentDirectory, @"Data\");
@@ -50,7 +51,7 @@ namespace crypcy.core
             e:  System.Console.WriteLine("Введите 'exit' чтобы выйти");
            
             System.Console.WriteLine("Введите комманду");
-            System.Console.WriteLine("1: Сервер");
+            System.Console.WriteLine("1: Отправить сообщение");
             System.Console.WriteLine("2: Клиент");
             System.Console.WriteLine("3: Создать цепочку");
             System.Console.WriteLine("4: Добавить блок в цепочку");
@@ -90,10 +91,10 @@ namespace crypcy.core
                 switch (caseSwitch)
                 {
                         case 1:
-                            Console.WriteLine("Сервер:");
-                            Console.WriteLine("Введите порт для прослушивания:");
-                            // localPort = Int32.Parse(Console.ReadLine());
-                            // Server server = new Server(localPort);
+                            Console.WriteLine("Введите сообщение.");
+                            // string message = Console.ReadLine();
+                            // Message  m = new Message();
+                            // peer.SendMessageUDP()
                             break;
                         case 2:
                             Console.WriteLine("Клиент:");
