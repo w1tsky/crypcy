@@ -5,7 +5,9 @@ namespace crypcy.shared
         PeerInfo,
         Message,
         Req,
-        Notification
+        Notification,
+        Ack,
+        KeepAlive
     }
     public class PeerItem
     {

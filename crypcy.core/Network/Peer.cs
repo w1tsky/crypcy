@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using crypcy.shared;
 
@@ -25,6 +27,10 @@ namespace crypcy.core
         private Thread ThreadTCPListen;
         private Thread ThreadUDPListen;
 
+        
+        public event EventHandler OnServerConnect;
+        public event EventHandler OnServerDisconnect;
+
         public event EventHandler<string> OnResultsUpdate;
         public event EventHandler<MessageReceivedEventArgs> OnMessageReceived;
         public event EventHandler<PeerInfo> OnClientAdded;
@@ -32,8 +38,6 @@ namespace crypcy.core
         public event EventHandler<PeerInfo> OnClientRemoved;
         public event EventHandler<IPEndPoint> OnClientConnection;
 
-        public event EventHandler OnServerConnect;
-        public event EventHandler OnServerDisconnect;
 
         private bool _TCPListen = false;
         public bool TCPListen
@@ -76,6 +80,10 @@ namespace crypcy.core
             foreach (var IP in IPs)
                 LocalPeerInfo.InternalAddresses.Add(IP);
 
+
+            ListenTCP();
+            ListenUDP();
+            SendMessageUDP(LocalPeerInfo.Simplified(), serverEndpoint);
         }
 
         private void ListenUDP()
@@ -163,7 +171,7 @@ namespace crypcy.core
             {
                 try
                 {
-                    InternetAccessAdapter = GetLocalIPAddress();
+                    InternetAccessAdapter = IPAddress.Parse("192.168.100.3");
 
                     if (OnResultsUpdate != null)
                         OnResultsUpdate.Invoke(this, "Adapter with Internet Access: " + InternetAccessAdapter);
@@ -178,7 +186,8 @@ namespace crypcy.core
                     LocalPeerInfo.InternalEndpoint = (IPEndPoint)PeerUDP.Client.LocalEndPoint;
 
                     Thread.Sleep(500);
-                    SendMessageTCP(LocalPeerInfo);
+                    SendMessageTCP(LocalPeerInfo.Simplified());
+                    System.Console.WriteLine("Tcp info is sended");
 
                     Thread KeepAlive = new Thread(new ThreadStart(delegate
                     {
@@ -209,7 +218,8 @@ namespace crypcy.core
             if (PeerTCP.Connected)
             {
                 byte[] Data = peerItem.PeerToByteArray();
-
+                string jsonStr = Encoding.UTF8.GetString(Data);
+                System.Console.WriteLine(jsonStr);
                 try
                 {
                     NetworkStream NetStream = PeerTCP.GetStream();

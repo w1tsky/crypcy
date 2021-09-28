@@ -13,6 +13,7 @@ namespace crypcy.shared
 
         public Notification(NotificationsTypes _Type, object _Tag)
         {
+            PeerItemType = PeerItemType.Notification;
             Type = _Type;
             Tag = _Tag;
         }
@@ -25,28 +26,28 @@ namespace crypcy.shared
         public string From { get; set; }
         public string To { get; set; }
         public string Content { get; set; }
-        public long RecipientID { get; set; }    
+        public long RecipientID { get; set; }
 
         public Message(string from, string to, string content)
         {
             PeerItemType = PeerItemType.Message;
             From = from;
             To = to;
-            Content = content;    
+            Content = content;
         }
     }
 
     [Serializable]
     public class Req : PeerItem
     {
-        public long RecipientID { get; set; }       
+        public long RecipientID { get; set; }
         public Req(long Sender_ID, long Recipient_ID)
         {
             ID = Sender_ID;
             PeerItemType = PeerItemType.Req;
             RecipientID = Recipient_ID;
         }
-    } 
+    }
 
     [Serializable]
     public class Ack : PeerItem
@@ -57,14 +58,18 @@ namespace crypcy.shared
         public Ack(long Sender_ID)
         {
             ID = Sender_ID;
+            PeerItemType = PeerItemType.Ack;
         }
     }
 
     [Serializable]
     public class KeepAlive : PeerItem
     {
-        public long ID { get; set; }
-    } 
+        public KeepAlive()
+        {
+            PeerItemType = PeerItemType.KeepAlive;
+        }
+    }
 
 
 }
