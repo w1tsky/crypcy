@@ -15,7 +15,6 @@ namespace crypcy.core
     public class Peer
     {
         public IPEndPoint ServerEndpoint { get; set; }
-
         private IPAddress InternetAccessAdapter;
         private TcpClient PeerTCP = new TcpClient();
         private UdpClient PeerUDP = new UdpClient();
@@ -27,7 +26,7 @@ namespace crypcy.core
         private Thread ThreadTCPListen;
         private Thread ThreadUDPListen;
 
-        
+
         public event EventHandler OnServerConnect;
         public event EventHandler OnServerDisconnect;
 
@@ -64,7 +63,7 @@ namespace crypcy.core
         }
 
         public Peer(IPEndPoint serverEndpoint)
-        {   
+        {
             ServerEndpoint = serverEndpoint;
 
             PeerUDP.AllowNatTraversal(true);
@@ -83,7 +82,6 @@ namespace crypcy.core
 
             ListenTCP();
             ListenUDP();
-            SendMessageUDP(LocalPeerInfo.Simplified(), serverEndpoint);
         }
 
         private void ListenUDP()
@@ -99,7 +97,7 @@ namespace crypcy.core
                         if (EP != null)
                         {
                             byte[] ReceivedBytes = PeerUDP.Receive(ref EP);
-                            PeerItem Item = ReceivedBytes.ByteArrayToPeer();
+                            PeerItem Item = ReceivedBytes.ByteArrayToPeer(ReceivedBytes.Length);
                             ProcessItem(Item, EP);
                         }
                     }
@@ -134,7 +132,7 @@ namespace crypcy.core
                             break;
                         else
                         {
-                            PeerItem peerItem = ReceivedBytes.ByteArrayToPeer();
+                            PeerItem peerItem = ReceivedBytes.ByteArrayToPeer(BytesRead);
                             ProcessItem(peerItem);
                         }
                     }
@@ -171,7 +169,7 @@ namespace crypcy.core
             {
                 try
                 {
-                    InternetAccessAdapter = IPAddress.Parse("192.168.100.3");
+                    InternetAccessAdapter = IPAddress.Parse("127.0.0.1");
 
                     if (OnResultsUpdate != null)
                         OnResultsUpdate.Invoke(this, "Adapter with Internet Access: " + InternetAccessAdapter);
@@ -187,7 +185,6 @@ namespace crypcy.core
 
                     Thread.Sleep(500);
                     SendMessageTCP(LocalPeerInfo.Simplified());
-                    System.Console.WriteLine("Tcp info is sended");
 
                     Thread KeepAlive = new Thread(new ThreadStart(delegate
                     {
@@ -217,13 +214,14 @@ namespace crypcy.core
         {
             if (PeerTCP.Connected)
             {
-                byte[] Data = peerItem.PeerToByteArray();
-                string jsonStr = Encoding.UTF8.GetString(Data);
-                System.Console.WriteLine(jsonStr);
+                byte[] data = peerItem.PeerToByteArray();
                 try
                 {
+                    string jsonStr = Encoding.UTF8.GetString(data);   
+                    System.Console.WriteLine($"TCP Sending: {jsonStr}");
+
                     NetworkStream NetStream = PeerTCP.GetStream();
-                    NetStream.Write(Data, 0, Data.Length);
+                    NetStream.Write(data, 0, data.Length);
                 }
                 catch (Exception e)
                 {
@@ -242,8 +240,15 @@ namespace crypcy.core
             try
             {
                 if (data != null)
+                {
+                    string jsonStr = Encoding.UTF8.GetString(data);
+                    System.Console.WriteLine($"UDP Sending: {jsonStr}");
+
                     PeerUDP.Send(data, data.Length, EP);
+                }
+
             }
+
             catch (Exception e)
             {
                 if (OnResultsUpdate != null)
@@ -300,7 +305,7 @@ namespace crypcy.core
                         Peers.Remove(peerInfo);
                     }
                 }
-                else if(N.Type == NotificationsTypes.ServerShutdown)
+                else if (N.Type == NotificationsTypes.ServerShutdown)
                 {
                     if (OnResultsUpdate != null)
                         OnResultsUpdate.Invoke(this, "Server shutting down.");
@@ -391,12 +396,12 @@ namespace crypcy.core
             if (OnResultsUpdate != null)
                 OnResultsUpdate.Invoke(this, "Attempting to Connect via LAN");
 
-            for (int ip = 0; ip < peerInfo.InternalAddresses.Count; ip++) 
+            for (int ip = 0; ip < peerInfo.InternalAddresses.Count; ip++)
             {
                 if (!PeerTCP.Connected)
                     break;
 
-                IPAddress IP = peerInfo.InternalAddresses[ip];              
+                IPAddress IP = peerInfo.InternalAddresses[ip];
 
                 IPEndPoint EP = new IPEndPoint(IP, peerInfo.InternalEndpoint.Port);
 
@@ -414,7 +419,7 @@ namespace crypcy.core
                     Ack Responce = AckResponces.FirstOrDefault(a => a.RecipientID == peerInfo.ID);
 
                     if (Responce != null)
-                    {                        
+                    {
                         if (OnResultsUpdate != null)
                             OnResultsUpdate.Invoke(this, "Received Ack Responce from " + EP.ToString());
 
@@ -469,7 +474,7 @@ namespace crypcy.core
 
             return null;
         }
-    
+
         public class MessageReceivedEventArgs : EventArgs
         {
             public Message message { get; set; }
