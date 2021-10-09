@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Text.Json;
 
@@ -7,13 +8,13 @@ namespace crypcy.shared
     {
         public static byte[] PeerToByteArray(this PeerItem peerItem)
         {
-
             return JsonSerializer.SerializeToUtf8Bytes(peerItem);
         }
 
-        public static PeerItem ByteArrayToPeer(this byte[] bytes)
+        public static PeerItem ByteArrayToPeer(this byte[] bytes, int bytesCount)
         {
-            string jsonStr = Encoding.UTF8.GetString(bytes);
+            
+            string jsonStr = Encoding.UTF8.GetString(bytes, 0, bytesCount);
             PeerItem item = JsonSerializer.Deserialize<PeerItem>(jsonStr);
 
             switch(item.PeerItemType)
@@ -26,8 +27,12 @@ namespace crypcy.shared
                     return JsonSerializer.Deserialize<Req>(jsonStr);
                 case PeerItemType.Notification:
                     return JsonSerializer.Deserialize<Notification>(jsonStr);
+                case PeerItemType.Ack:
+                    return JsonSerializer.Deserialize<Ack>(jsonStr);
+                case PeerItemType.KeepAlive:
+                    return JsonSerializer.Deserialize<KeepAlive>(jsonStr);
                 default:
-                    return JsonSerializer.Deserialize<PeerItem>(jsonStr);
+                    return item;
             }
         }
     }

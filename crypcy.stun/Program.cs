@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using crypcy.shared;
 
@@ -10,9 +12,7 @@ namespace crypcy.stun
 {
     class Program
     {
-
         static int Port = 23555;
-
         static IPEndPoint UDPEndPoint = new IPEndPoint(IPAddress.Any, Port);
         static UdpClient UDP = new UdpClient(UDPEndPoint);
 
@@ -61,7 +61,12 @@ namespace crypcy.stun
 
                 if (ReceivedBytes != null)
                 {
-                    PeerItem peerItem = ReceivedBytes.ByteArrayToPeer();
+                    
+                    PeerItem peerItem = ReceivedBytes.ByteArrayToPeer(ReceivedBytes.Length);
+
+                    string jsonStr = Encoding.UTF8.GetString(ReceivedBytes);
+                    Console.WriteLine("UDP received {0}:", jsonStr); 
+
                     ProcessItem(peerItem, ProtocolType.Udp, UDPEndPoint);
                 }
             }
@@ -92,7 +97,7 @@ namespace crypcy.stun
                         {
                             try
                             {
-                                BytesRead = Peer.GetStream().Read(Data, 0, Data.Length);                             
+                                BytesRead = Peer.GetStream().Read(Data, 0, Data.Length);
                             }
                             catch
                             {
@@ -103,7 +108,8 @@ namespace crypcy.stun
                                 break;
                             else if (Peer.Connected)
                             {
-                                PeerItem peerItem = Data.ByteArrayToPeer();
+
+                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);     
                                 ProcessItem(peerItem, ProtocolType.Tcp, null, Peer);
                             }
                         }

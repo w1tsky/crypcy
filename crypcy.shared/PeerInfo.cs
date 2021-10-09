@@ -7,14 +7,15 @@ using System.Reflection;
 namespace crypcy.shared
 {
     public enum ConnectionTypes { Unknown, LAN, WAN }
+    [Serializable]
     public class PeerInfo : PeerItem
     {
         public string Name { get; set; }
         public IPEndPoint ExternalEndpoint { get; set; }
         public IPEndPoint InternalEndpoint { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
-
         public List<IPAddress> InternalAddresses = new List<IPAddress>(); 
+
         [NonSerialized]
         public TcpClient PeerTCP;
         [NonSerialized] 
