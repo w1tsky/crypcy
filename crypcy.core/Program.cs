@@ -12,10 +12,8 @@ namespace crypcy.core
 {
     class Program
     {
-
         static List<Blockchain> blockchains = new List<Blockchain>();
         static string chainName;
-
         static string fileName;
         static string filePath;
         static string dirPath;
@@ -27,7 +25,7 @@ namespace crypcy.core
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 23555);
             Peer peer = new Peer(serverEndpoint);
             peer.ConnectOrDisconnect();
-            
+
             fileName = "blockchains.json";
             dirPath = Path.Combine(Environment.CurrentDirectory, @"Data\");
             filePath = Path.Combine(dirPath, fileName);
@@ -59,7 +57,6 @@ namespace crypcy.core
             System.Console.WriteLine("5: Просмотреть цепочку");
             System.Console.WriteLine("6: Список цепочек");
 
-
             if (Console.ReadLine().ToUpper() == "EXIT")
             {
                 Console.WriteLine("Shutting down...");
@@ -69,7 +66,6 @@ namespace crypcy.core
             {
                 goto e;
             }
-
 
             bool done = false;
 
