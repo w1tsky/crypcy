@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading;
 using crypcy.shared;
 
@@ -109,7 +108,11 @@ namespace crypcy.stun
                             else if (Peer.Connected)
                             {
 
-                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);     
+                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);  
+
+                                string jsonStr = Encoding.UTF8.GetString(Data,0, BytesRead);
+                                Console.WriteLine("TCP received {0}:", jsonStr); 
+
                                 ProcessItem(peerItem, ProtocolType.Tcp, null, Peer);
                             }
                         }

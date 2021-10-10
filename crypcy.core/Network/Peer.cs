@@ -1,12 +1,9 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using crypcy.shared;
 
@@ -73,11 +70,7 @@ namespace crypcy.core
             LocalPeerInfo.Name = System.Environment.MachineName;
             LocalPeerInfo.ConnectionType = ConnectionTypes.Unknown;
             LocalPeerInfo.ID = DateTime.Now.Ticks;
-
-            var IPs = Dns.GetHostEntry(Dns.GetHostName()).AddressList.Where(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-
-            foreach (var IP in IPs)
-                LocalPeerInfo.InternalAddresses.Add(IP);
+            LocalPeerInfo.InternalAddresses.Add(GetAdapterWithInternetAccess());
 
 
             ListenTCP();
@@ -169,7 +162,9 @@ namespace crypcy.core
             {
                 try
                 {
-                    InternetAccessAdapter = IPAddress.Parse("127.0.0.1");
+                    InternetAccessAdapter = GetAdapterWithInternetAccess();
+
+                    Console.WriteLine(InternetAccessAdapter);
 
                     if (OnResultsUpdate != null)
                         OnResultsUpdate.Invoke(this, "Adapter with Internet Access: " + InternetAccessAdapter);
@@ -181,6 +176,8 @@ namespace crypcy.core
                     TCPListen = true;
 
                     SendMessageUDP(LocalPeerInfo.Simplified(), ServerEndpoint);
+
+
                     LocalPeerInfo.InternalEndpoint = (IPEndPoint)PeerUDP.Client.LocalEndPoint;
 
                     Thread.Sleep(500);
@@ -215,9 +212,10 @@ namespace crypcy.core
             if (PeerTCP.Connected)
             {
                 byte[] data = peerItem.PeerToByteArray();
+
                 try
                 {
-                    string jsonStr = Encoding.UTF8.GetString(data);   
+                    string jsonStr = Encoding.UTF8.GetString(data);
                     System.Console.WriteLine($"TCP Sending: {jsonStr}");
 
                     NetworkStream NetStream = PeerTCP.GetStream();
@@ -256,6 +254,14 @@ namespace crypcy.core
             }
         }
 
+        private IPAddress GetAdapterWithInternetAccess()
+        {
+            return System.Net.Dns
+                    .GetHostEntry(Environment.MachineName)
+                    .AddressList.Where(i => i.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    .FirstOrDefault();
+        }
+
         private void ProcessItem(PeerItem peerItem, IPEndPoint EP = null)
         {
             if (peerItem.GetType() == typeof(Message))
@@ -269,6 +275,7 @@ namespace crypcy.core
 
                 if (m.ID != 0 & EP != null & peerInfo != null)
                     if (OnMessageReceived != null)
+                        System.Console.WriteLine(EP.ToString(), m.From, m.Content);
                         OnMessageReceived.Invoke(EP, new MessageReceivedEventArgs(peerInfo, m, EP));
             }
             else if (peerItem.GetType() == typeof(PeerInfo))
