@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace crypcy.shared
 {
@@ -11,7 +12,9 @@ namespace crypcy.shared
     public class PeerInfo : PeerItem
     {
         public string Name { get; set; }
+        [JsonConverter(typeof(IPEndPointConverter))]
         public IPEndPoint ExternalEndpoint { get; set; }
+        [JsonConverter(typeof(IPEndPointConverter))]
         public IPEndPoint InternalEndpoint { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
         public List<IPAddress> InternalAddresses = new List<IPAddress>(); 
