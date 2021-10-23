@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crypcy.shared", "crypcy.sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crypcy.stun", "crypcy.stun\crypcy.stun.csproj", "{F13DB0EB-1D17-4DFB-AA9F-245A07EE4B1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crypcy.desktop", "crypcy.desktop\crypcy.desktop.csproj", "{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{F13DB0EB-1D17-4DFB-AA9F-245A07EE4B1F}.Release|x64.Build.0 = Release|Any CPU
 		{F13DB0EB-1D17-4DFB-AA9F-245A07EE4B1F}.Release|x86.ActiveCfg = Release|Any CPU
 		{F13DB0EB-1D17-4DFB-AA9F-245A07EE4B1F}.Release|x86.Build.0 = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|x64.Build.0 = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|x64.Build.0 = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{2A7BB3BA-EEEF-4808-972D-CE417A6CC7A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
