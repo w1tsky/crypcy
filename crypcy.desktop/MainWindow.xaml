@@ -5,8 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:crypcy.desktop"
         mc:Ignorable="d"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+          CaptionHeight="30"
+          ResizeBorderThickness="5"
+          />
+    </WindowChrome.WindowChrome>
+
+    <Grid Background="#2c2f33">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1e2124" >
+            <TextBlock Text="Blockchain App" Foreground="#b9bbbe" Margin="4.4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <DockPanel HorizontalAlignment="Right" Margin="0,0,7,0">
+                <Ellipse Fill="Yellow" Margin="3"  Height="13" Width="13" MouseLeftButtonDown="minimizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <Ellipse Fill="Azure" Margin="3" Height="13" Width="13" MouseLeftButtonDown="MaximizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <Ellipse Fill="Red" Margin="3"   Height="13" Width="13" MouseLeftButtonDown="closeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+            </DockPanel>
+
+        </Grid>
+
+
+        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Background="#23272a">
+            <Button Name="HomeButton"  Content="Conncet to server" FontSize="10" Height="65" Margin="3"/>
+            <!--<Button Name="ManageChains_Button"  FontSize="10" Content="Chains"  Height="65" Margin="3"/>-->
+        </StackPanel>
+
+
+        <Frame Grid.Column="1" Grid.Row="1" Name="mainFrame" NavigationUIVisibility="Hidden" Grid.ColumnSpan="2"/>
+
+        <StatusBar Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
+            <StatusBarItem>
+                <TextBlock Text="Current User:" Foreground="White"  />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="CurrentUser"  Foreground="White" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Role:"  Foreground="White" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="CurrentUserRole"  Foreground="White" />
+            </StatusBarItem>
+        </StatusBar>
 
     </Grid>
 </Window>
