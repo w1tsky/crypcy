@@ -29,7 +29,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1e2124" >
-            <TextBlock Text="Blockchain App" Foreground="#b9bbbe" Margin="4.4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <TextBlock Text="Crypcy App" Foreground="#b9bbbe" Margin="4.4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
             <DockPanel HorizontalAlignment="Right" Margin="0,0,7,0">
                 <Ellipse Fill="Yellow" Margin="3"  Height="13" Width="13" MouseLeftButtonDown="minimizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
                 <Ellipse Fill="Azure" Margin="3" Height="13" Width="13" MouseLeftButtonDown="MaximizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -38,14 +38,56 @@
 
         </Grid>
 
-
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Background="#23272a">
-            <Button Name="HomeButton"  Content="Conncet to server" FontSize="10" Height="65" Margin="3"/>
+            <Button Name="btnConnect"  Content="Conncet to server" FontSize="10" Height="65" Margin="3" Click="btnConnect_Click"/>
             <!--<Button Name="ManageChains_Button"  FontSize="10" Content="Chains"  Height="65" Margin="3"/>-->
         </StackPanel>
 
+        <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
 
-        <Frame Grid.Column="1" Grid.Row="1" Name="mainFrame" NavigationUIVisibility="Hidden" Grid.ColumnSpan="2"/>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <ListBox Grid.Column="0" Name="lstPeers" Foreground="White" SelectionChanged="lstPeers_SelectionChanged"/>
+
+
+                <StackPanel Margin="10" Name="PeerInfoDetails" Grid.Column="1" >
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="16" Text="Peer Name: " Foreground="White" />
+                        <TextBlock FontSize="16" Text="{Binding Path=Name}" Foreground="White" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="16" Text="External EP: " Foreground="White" />
+                        <TextBlock FontSize="16" Text="{Binding Path=ExternalEndpoint}" Foreground="White" />
+                    </StackPanel>
+
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="16" Text="Internal EP: " Foreground="White" />
+                        <TextBlock FontSize="16" Text="{Binding Path=InternalEndpoint}" Foreground="White" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="16" Text="Connection Type: " Foreground="White"/>
+                        <TextBlock FontSize="16" Text="{Binding Path=ConnectionType}" Foreground="White" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            
+            
+
+
+            <TextBox Name="Console" Grid.Row="1" IsReadOnly="True" Background="#FF42464B" Foreground="White"/>
+
+        </Grid>
 
         <StatusBar Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
             <StatusBarItem>

@@ -6,4 +6,13 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\crypcy.shared\crypcy.shared.csproj" />
+    <ProjectReference Include="..\crypcy.core\crypcy.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+  </ItemGroup>
+
 </Project>

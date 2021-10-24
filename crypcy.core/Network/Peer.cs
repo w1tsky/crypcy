@@ -275,7 +275,6 @@ namespace crypcy.core
 
                 if (m.ID != 0 & EP != null & peerInfo != null)
                     if (OnMessageReceived != null)
-                        System.Console.WriteLine(EP.ToString(), m.From, m.Content);
                         OnMessageReceived.Invoke(EP, new MessageReceivedEventArgs(peerInfo, m, EP));
             }
             else if (peerItem.GetType() == typeof(PeerInfo))
@@ -383,6 +382,34 @@ namespace crypcy.core
                     SendMessageUDP(A, EP);
                 }
             }
+        }
+
+        public void ConnectToPeer(PeerInfo peerInfo)
+        {
+            Req R = new Req(LocalPeerInfo.ID, peerInfo.ID);
+
+            SendMessageTCP(R);
+
+            if (OnResultsUpdate != null)
+                OnResultsUpdate.Invoke(this, "Sent Connection Request To: " + peerInfo.ToString());
+
+            Thread Connect = new Thread(new ThreadStart(delegate
+            {
+                IPEndPoint ResponsiveEP = FindReachableEndpoint(peerInfo);
+
+                if (ResponsiveEP != null)
+                {
+                    if (OnResultsUpdate != null)
+                        OnResultsUpdate.Invoke(this, "Connection Successfull to: " + ResponsiveEP.ToString());
+
+                    if (OnClientConnection != null)
+                        OnClientConnection.Invoke(peerInfo, ResponsiveEP);
+                }
+            }));
+
+            Connect.IsBackground = true;
+
+            Connect.Start();
         }
 
         public static IPAddress GetLocalIPAddress()
