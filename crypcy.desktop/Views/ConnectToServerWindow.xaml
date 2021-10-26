@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:crypcy.desktop.Views"
+        WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
-        Title="ConnectToServerWindow" Height="450" Width="800">
+        Title="ConnectToServerWindow" Height="300" Width="500">
     <WindowChrome.WindowChrome>
         <WindowChrome 
           CaptionHeight="10"
@@ -14,19 +15,13 @@
 
     <Grid Background="#2c2f33">
 
-        <StackPanel Margin="10" Name="UserDetails" HorizontalAlignment="Center" VerticalAlignment="Center" >
-            <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="16" Text=" User ID: " Foreground="White" />
-                <TextBlock FontSize="16" Text="{Binding Path=UserID}" Foreground="White" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="16" Text=" Username: " Foreground="White" />
-                <TextBlock FontSize="16" Text="{Binding Path=Login}" Foreground="White" />
-            </StackPanel>
-
-
-
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" MinHeight="200" MinWidth="400" VerticalAlignment="Center" >
+            <Label Content="Connect to Server" Foreground="White" HorizontalAlignment="Left" FontSize="30" Margin="20"/>
+            <Label Content="Server IP adress or hostname:" Foreground="White" HorizontalAlignment="Left"/>
+            <TextBox Name="AddressBox" Height="23"  Foreground="White"/>
+            <Label  Content="Server Port:" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <TextBox Name="PortBox"  Height="23"    Foreground="White"/>
+            <Button Content="Connect" HorizontalAlignment="Center"  Click="ConnectButton_Click" Margin="30"/>
         </StackPanel>
 
 

@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using crypcy.core;
+using crypcy.desktop.Views;
 using crypcy.shared;
 
 namespace crypcy.desktop
@@ -23,56 +24,25 @@ namespace crypcy.desktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        static IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 23555);
-        static Peer peer = new Peer(serverEndpoint);
+        public static Peer peer;
 
-        public MainWindow()
+        public MainWindow(IPEndPoint serverEndpoint)
         {
             InitializeComponent();
+            peer = new Peer(serverEndpoint);
+            MainFrame.Navigate(new ConnectServerControl(peer));
 
-            peer.OnServerConnect += Client_OnServerConnect;
-            peer.OnServerDisconnect += Client_OnServerDisconnect;
-            peer.OnClientAdded += Client_OnClientAdded;
+            ConnectionStatus.Text = "Connected";
         }
 
-        private void Client_OnServerDisconnect(object sender, EventArgs e)
+        private void btnChat_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(delegate
-            {
-                btnConnect.Content = "Connect";
-                lstPeers.Items.Clear();
-
-                //for (int c = 0; c < ChatWindows.Count - 1; c++)
-                //    ChatWindows[c].Close();
-            });
+            MainFrame.Navigate(new PeerChatControl(peer));
         }
 
-        private void Client_OnClientAdded(object sender, PeerInfo e)
+        private void btnPeerList_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(delegate
-            {
-                lstPeers.Items.Add(e);
-            });
-        }
-
-        private void Client_OnServerConnect(object sender, EventArgs e)
-        {
-            btnConnect.Content = "Disconnect from Server";
-        }
-
-
-        private void lstPeers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lstPeers.SelectedItem != null)
-            {
-                PeerInfo peerInfo = (PeerInfo)lstPeers.SelectedItem;
-                PeerInfoDetails.DataContext = peerInfo;
-            }
-        }
-
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            peer.ConnectOrDisconnect();
+            MainFrame.Navigate(new ConnectServerControl(peer));
         }
 
         private void closeApp(object sender, MouseButtonEventArgs e)
@@ -113,5 +83,7 @@ namespace crypcy.desktop
             }
 
         }
+
+
     }
 }

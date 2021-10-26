@@ -39,68 +39,18 @@
         </Grid>
 
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Background="#23272a">
-            <Button Name="btnConnect"  Content="Conncet to server" FontSize="10" Height="65" Margin="3" Click="btnConnect_Click"/>
-            <!--<Button Name="ManageChains_Button"  FontSize="10" Content="Chains"  Height="65" Margin="3"/>-->
+            <Button Name="btnPeerList"  Content="Peer List" Click="btnPeerList_Click" FontSize="10" Height="65" Margin="3" />
+            <Button Name="btnChat"  FontSize="10" Content="Chat" Click="btnChat_Click"  Height="65" Margin="3"/>
         </StackPanel>
 
-        <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
+        <Frame Grid.Column="1" Grid.Row="1" Name="MainFrame" NavigationUIVisibility="Hidden" />
 
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <ListBox Grid.Column="0" Name="lstPeers" Foreground="White" SelectionChanged="lstPeers_SelectionChanged"/>
-
-
-                <StackPanel Margin="10" Name="PeerInfoDetails" Grid.Column="1" >
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="16" Text="Peer Name: " Foreground="White" />
-                        <TextBlock FontSize="16" Text="{Binding Path=Name}" Foreground="White" />
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="16" Text="External EP: " Foreground="White" />
-                        <TextBlock FontSize="16" Text="{Binding Path=ExternalEndpoint}" Foreground="White" />
-                    </StackPanel>
-
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="16" Text="Internal EP: " Foreground="White" />
-                        <TextBlock FontSize="16" Text="{Binding Path=InternalEndpoint}" Foreground="White" />
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="16" Text="Connection Type: " Foreground="White"/>
-                        <TextBlock FontSize="16" Text="{Binding Path=ConnectionType}" Foreground="White" />
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-            
-            
-
-
-            <TextBox Name="Console" Grid.Row="1" IsReadOnly="True" Background="#FF42464B" Foreground="White"/>
-
-        </Grid>
-
-        <StatusBar Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
             <StatusBarItem>
-                <TextBlock Text="Current User:" Foreground="White"  />
+                <TextBlock Text="Connection Status:" Foreground="White"  />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock x:Name="CurrentUser"  Foreground="White" />
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="Role:"  Foreground="White" />
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock x:Name="CurrentUserRole"  Foreground="White" />
+                <TextBlock Name="ConnectionStatus"  Foreground="White" />
             </StatusBarItem>
         </StatusBar>
 
