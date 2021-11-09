@@ -17,7 +17,7 @@ namespace crypcy.core
         private UdpClient PeerUDP = new UdpClient();
         public PeerInfo LocalPeerInfo = new PeerInfo();
 
-        private List<PeerInfo> Peers = new List<PeerInfo>();
+        public List<PeerInfo> Peers = new List<PeerInfo>();
         private List<Ack> AckResponces = new List<Ack>();
 
         private Thread ThreadTCPListen;
@@ -216,7 +216,7 @@ namespace crypcy.core
                 try
                 {
                     string jsonStr = Encoding.UTF8.GetString(data);
-                    System.Console.WriteLine($"TCP Sending: {jsonStr}");
+                    Console.WriteLine($"TCP Sending: {jsonStr}");
 
                     NetworkStream NetStream = PeerTCP.GetStream();
                     NetStream.Write(data, 0, data.Length);
@@ -240,7 +240,7 @@ namespace crypcy.core
                 if (data != null)
                 {
                     string jsonStr = Encoding.UTF8.GetString(data);
-                    System.Console.WriteLine($"UDP Sending: {jsonStr}");
+                    Console.WriteLine($"UDP Sending: {jsonStr}");
 
                     PeerUDP.Send(data, data.Length, EP);
                 }
@@ -386,7 +386,7 @@ namespace crypcy.core
 
         public void ConnectToPeer(PeerInfo peerInfo)
         {
-            Req R = new Req(LocalPeerInfo.ID, peerInfo.ID);
+            Req R = new(LocalPeerInfo.ID, peerInfo.ID);
 
             SendMessageTCP(R);
 
