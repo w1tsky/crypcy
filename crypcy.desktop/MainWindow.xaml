@@ -1,0 +1,58 @@
+﻿<Window x:Class="crypcy.desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:crypcy.desktop"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        Title="MainWindow" Height="450" Width="800">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+          CaptionHeight="30"
+          ResizeBorderThickness="5"
+          />
+    </WindowChrome.WindowChrome>
+
+    <Grid Background="#2c2f33">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1e2124" >
+            <TextBlock Text="Crypcy App" Foreground="#b9bbbe" Margin="4.4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <DockPanel HorizontalAlignment="Right" Margin="0,0,7,0">
+                <Ellipse Fill="Yellow" Margin="3"  Height="13" Width="13" MouseLeftButtonDown="minimizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <Ellipse Fill="Azure" Margin="3" Height="13" Width="13" MouseLeftButtonDown="MaximizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <Ellipse Fill="Red" Margin="3"   Height="13" Width="13" MouseLeftButtonDown="closeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
+            </DockPanel>
+
+        </Grid>
+
+        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Background="#23272a">
+            <Button Name="btnPeerList"  Content="Peer List" Click="btnPeerList_Click" FontSize="10" Height="65" Margin="3" />
+            <Button Name="btnChat"  FontSize="10" Content="Chat" Click="btnChat_Click"  Height="65" Margin="3"/>
+        </StackPanel>
+
+        <Frame Grid.Column="1" Grid.Row="1" Name="MainFrame" NavigationUIVisibility="Hidden" />
+
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
+            <StatusBarItem>
+                <TextBlock Text="Connection Status:" Foreground="White"  />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Name="ConnectionStatus"  Foreground="White" />
+            </StatusBarItem>
+        </StatusBar>
+
+    </Grid>
+</Window>

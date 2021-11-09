@@ -27,11 +27,11 @@ namespace crypcy.stun
             ThreadUDP.Start();
             ThreadTCP.Start();
 
-            e:  Console.WriteLine("Type 'exit' to shutdown the server");
+        e: Console.WriteLine("Type 'exit' to shutdown the server");
 
             if (Console.ReadLine().ToUpper() == "EXIT")
             {
-                Console.WriteLine("Shutting down...");            
+                Console.WriteLine("Shutting down...");
                 Environment.Exit(0);
             }
             else
@@ -51,7 +51,7 @@ namespace crypcy.stun
 
                 try
                 {
-                    ReceivedBytes = UDP.Receive(ref UDPEndPoint);                    
+                    ReceivedBytes = UDP.Receive(ref UDPEndPoint);
                 }
                 catch (Exception ex)
                 {
@@ -60,11 +60,11 @@ namespace crypcy.stun
 
                 if (ReceivedBytes != null)
                 {
-                    
+
                     PeerItem peerItem = ReceivedBytes.ByteArrayToPeer(ReceivedBytes.Length);
 
                     string jsonStr = Encoding.UTF8.GetString(ReceivedBytes);
-                    Console.WriteLine("UDP received {0}:", jsonStr); 
+                    Console.WriteLine("UDP received {0}:", jsonStr);
 
                     ProcessItem(peerItem, ProtocolType.Udp, UDPEndPoint);
                 }
@@ -87,7 +87,7 @@ namespace crypcy.stun
                     Action<object> ProcessData = new Action<object>(delegate (object _peer)
                     {
                         TcpClient Peer = (TcpClient)_peer;
-                        Peer.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);                      
+                        Peer.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
 
                         byte[] Data = new byte[4096];
                         int BytesRead = 0;
@@ -104,20 +104,21 @@ namespace crypcy.stun
                             }
 
                             if (BytesRead == 0)
+
                                 break;
                             else if (Peer.Connected)
                             {
 
-                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);  
+                                string jsonStr = Encoding.UTF8.GetString(Data, 0, BytesRead);
+                                Console.WriteLine("TCP received {0}:", jsonStr);
 
-                                string jsonStr = Encoding.UTF8.GetString(Data,0, BytesRead);
-                                Console.WriteLine("TCP received {0}:", jsonStr); 
+                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);
 
                                 ProcessItem(peerItem, ProtocolType.Tcp, null, Peer);
                             }
                         }
 
-                        Disconnect(Peer);                     
+                        Disconnect(Peer);
                     });
 
                     Thread ThreadProcessData = new Thread(new ParameterizedThreadStart(ProcessData));
@@ -136,7 +137,7 @@ namespace crypcy.stun
 
             if (peerInfo != null)
             {
-                Peers.Remove(peerInfo);               
+                Peers.Remove(peerInfo);
                 Console.WriteLine("Client Disconnected {0}", peerTCP.Client.RemoteEndPoint.ToString());
                 peerTCP.Close();
 
@@ -157,8 +158,8 @@ namespace crypcy.stun
 
                     if (EP != null)
                         Console.WriteLine("Client Added: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
-                   else if (peerTCP != null)
-                       Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
+                    else if (peerTCP != null)
+                        Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
                 else
                 {
@@ -166,8 +167,8 @@ namespace crypcy.stun
 
                     if (EP != null)
                         Console.WriteLine("Client Updated: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
-                   else if (peerTCP != null)
-                       Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
+                    else if (peerTCP != null)
+                        Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
 
                 if (EP != null)
@@ -183,13 +184,13 @@ namespace crypcy.stun
                     if (peer.ExternalEndpoint != null & Protocol == ProtocolType.Udp)
                         SendUDP(new Message("Server", peer.Name, "UDP Communication Test"), peer.ExternalEndpoint);
 
-                   if (peer.PeerTCP != null & Protocol == ProtocolType.Tcp)
-                       SendTCP(new Message("Server", peer.Name, "TCP Communication Test"), peer.PeerTCP);
+                    if (peer.PeerTCP != null & Protocol == ProtocolType.Tcp)
+                        SendTCP(new Message("Server", peer.Name, "TCP Communication Test"), peer.PeerTCP);
 
                     if (peer.PeerTCP != null & peer.ExternalEndpoint != null)
                     {
-                        foreach (PeerInfo p in Peers)                                          
-                            SendUDP(p, peer.ExternalEndpoint);                       
+                        foreach (PeerInfo p in Peers)
+                            SendUDP(p, peer.ExternalEndpoint);
 
                         peer.Initialized = true;
                     }
@@ -200,7 +201,7 @@ namespace crypcy.stun
             else if (peerItem.GetType() == typeof(Message))
             {
                 Console.WriteLine("Message from {0}:{1}: {2}", UDPEndPoint.Address, UDPEndPoint.Port, ((Message)peerItem).Content);
-            }           
+            }
             else if (peerItem.GetType() == typeof(Req))
             {
                 Req R = (Req)peerItem;
@@ -208,8 +209,10 @@ namespace crypcy.stun
                 PeerInfo peer = Peers.FirstOrDefault(x => x.ID == R.RecipientID);
 
                 if (peer != null)
+                {
                     SendTCP(R, peer.PeerTCP);
-            }            
+                }
+            }
         }
 
 
@@ -220,7 +223,7 @@ namespace crypcy.stun
                 byte[] Data = peerItem.PeerToByteArray();
 
                 NetworkStream NetStream = peerTCP.GetStream();
-                NetStream.Write(Data, 0, Data.Length);            
+                NetStream.Write(Data, 0, Data.Length);
             }
         }
 
@@ -240,6 +243,6 @@ namespace crypcy.stun
         {
             foreach (PeerInfo peer in Peers)
                 SendUDP(peerItem, peer.ExternalEndpoint);
-        }       
+        }
     }
 }
