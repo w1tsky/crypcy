@@ -6,25 +6,26 @@
              xmlns:local="clr-namespace:crypcy.desktop.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <DataTemplate x:Key="PeerInfoTemplate" >
-            <StackPanel Margin="5"  Orientation="Vertical">
-                <TextBlock FontSize="14" Text="{Binding Path=Name}" HorizontalAlignment="Left" Foreground="White"/>
-                <TextBlock FontSize="14" Text="{Binding Path=ExternalEndpoint}"  HorizontalAlignment="Left" Foreground="White"/>
-            </StackPanel>
-        </DataTemplate>
-    </UserControl.Resources>
-
     <Grid Background="#2c2f33">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="6*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-        <Grid >
+        <StackPanel Grid.Row="0">
+            <TextBox Name="MessagesBox" Margin="5,5,5,40" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Height="375" Foreground="White"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Background="#FF404449">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ListBox Grid.Column="0" Name="lstPeers" Foreground="White" SelectionChanged="lstPeers_SelectionChanged" ItemTemplate="{StaticResource PeerInfoTemplate}" Background="#FF4D5157" />
+            <TextBox Grid.Column="0" Name="SendMessageBox" Margin="5" HorizontalAlignment="Stretch"  Foreground="White" />
+            <Button Grid.Column="1" Margin="5" Content="Send" Click="ButtonSendMessage_Click"/>
 
         </Grid>
+         
     </Grid>
 </UserControl>

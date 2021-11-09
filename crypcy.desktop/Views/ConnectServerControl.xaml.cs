@@ -27,36 +27,9 @@ namespace crypcy.desktop.Views
         public ConnectServerControl(Peer peer)
         {
             InitializeComponent();
-            peer.ConnectOrDisconnect();
-            peer.OnServerConnect += Peer_OnServerConnect;
-            peer.OnServerDisconnect += Peer_OnServerDisconnect;
-            peer.OnClientAdded += Peer_OnClientAdded;
-        }
 
+            lstPeers.ItemsSource = peer.Peers;
 
-        private void Peer_OnServerConnect(object sender, EventArgs e)
-        {
-            ((MainWindow)App.Current.MainWindow).ConnectionStatus.Text = "Connected";
-        }
-
-        private void Peer_OnServerDisconnect(object sender, EventArgs e)
-        {
-            Dispatcher.Invoke(delegate
-            {
-                //((MainWindow)App.Current.MainWindow).ConnectionStatus.Text = "Disconnected";
-                lstPeers.Items.Clear();
-
-                //for (int c = 0; c < ChatWindows.Count - 1; c++)
-                //    ChatWindows[c].Close();
-            });
-        }
-
-        private void Peer_OnClientAdded(object sender, PeerInfo e)
-        {
-            Dispatcher.Invoke(delegate
-            {
-                lstPeers.Items.Add(e);
-            });
         }
 
         private void lstPeers_SelectionChanged(object sender, SelectionChangedEventArgs e)

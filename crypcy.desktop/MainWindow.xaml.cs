@@ -24,25 +24,26 @@ namespace crypcy.desktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static Peer peer;
+        public static Peer Peer { get; set; }
+        
 
         public MainWindow(IPEndPoint serverEndpoint)
         {
             InitializeComponent();
-            peer = new Peer(serverEndpoint);
-            MainFrame.Navigate(new ConnectServerControl(peer));
+            Peer = new Peer(serverEndpoint);
+            Peer.ConnectOrDisconnect();
 
             ConnectionStatus.Text = "Connected";
         }
 
         private void btnChat_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new PeerChatControl(peer));
+            MainFrame.Navigate(new PeerConnectControl(Peer));
         }
 
         private void btnPeerList_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new ConnectServerControl(peer));
+            MainFrame.Navigate(new ConnectServerControl(Peer));
         }
 
         private void closeApp(object sender, MouseButtonEventArgs e)
