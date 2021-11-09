@@ -17,14 +17,14 @@ namespace crypcy.shared
         [JsonConverter(typeof(IPEndPointConverter))]
         public IPEndPoint InternalEndpoint { get; set; }
         public ConnectionTypes ConnectionType { get; set; }
-        public List<IPAddress> InternalAddresses = new List<IPAddress>(); 
+        public List<IPAddress> InternalAddresses = new List<IPAddress>();
 
         [NonSerialized]
         public TcpClient PeerTCP;
-        [NonSerialized] 
+        [NonSerialized]
         public bool Initialized;
 
-        public bool Update(PeerInfo peer) 
+        public bool Update(PeerInfo peer)
         {
             PeerItemType = PeerItemType.PeerInfo;
 
@@ -45,13 +45,13 @@ namespace crypcy.shared
 
         public PeerInfo Simplified()
         {
-            return new  PeerInfo()
+            return new PeerInfo()
             {
+                PeerItemType = PeerItemType.PeerInfo,
                 ID = this.ID,
-                PeerItemType = PeerItemType.PeerInfo,  
                 Name = this.Name,
                 InternalEndpoint = this.InternalEndpoint,
-                ExternalEndpoint = this.ExternalEndpoint            
+                ExternalEndpoint = this.ExternalEndpoint
             };
         }
     }

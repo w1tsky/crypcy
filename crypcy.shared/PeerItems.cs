@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace crypcy.shared
 {
@@ -22,11 +23,9 @@ namespace crypcy.shared
     [Serializable]
     public class Message : PeerItem
     {
-
         public string From { get; set; }
         public string To { get; set; }
         public string Content { get; set; }
-        public long RecipientID { get; set; }
 
         public Message(string from, string to, string content)
         {
@@ -41,24 +40,34 @@ namespace crypcy.shared
     public class Req : PeerItem
     {
         public long RecipientID { get; set; }
-        public Req(long Sender_ID, long Recipient_ID)
+        public long SenderID { get; set; }
+
+        // invistigate ctor properties set
+
+        [JsonConstructor]
+        public Req(long senderID, long recipientID)
         {
-            ID = Sender_ID;
             PeerItemType = PeerItemType.Req;
-            RecipientID = Recipient_ID;
+            ID = senderID;
+            RecipientID = recipientID;
+            SenderID = senderID;
         }
+
     }
 
     [Serializable]
     public class Ack : PeerItem
     {
         public long RecipientID { get; set; }
+        public long SenderID { get; set; }
         public bool Responce { get; set; }
 
-        public Ack(long Sender_ID)
+
+        public Ack(long senderID)
         {
-            ID = Sender_ID;
             PeerItemType = PeerItemType.Ack;
+            SenderID = senderID;
+            ID = senderID;
         }
     }
 
