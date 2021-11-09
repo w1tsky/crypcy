@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  crypcy-stun:
+    build:
+      context: "."
+      dockerfile: ./Dockerfile
+    ports:
+      - 23555:23555
+    expose:
+      - "23555"
+    restart: always

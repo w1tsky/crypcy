@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "crypcy.stun": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
