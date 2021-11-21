@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="800">
 
     <WindowChrome.WindowChrome>
         <WindowChrome 
@@ -23,12 +23,14 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="20px"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="20px"/>
+            <RowDefinition Height="200px"/>
+   
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="#1e2124" >
+        <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="#1e2124" >
             <TextBlock Text="Crypcy App" Foreground="#b9bbbe" Margin="4.4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
             <DockPanel HorizontalAlignment="Right" Margin="0,0,7,0">
                 <Ellipse Fill="Yellow" Margin="3"  Height="13" Width="13" MouseLeftButtonDown="minimizeApp" WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -43,16 +45,25 @@
             <Button Name="btnChat"  FontSize="10" Content="Chat" Click="btnChat_Click"  Height="65" Margin="3"/>
         </StackPanel>
 
-        <Frame Grid.Column="1" Grid.Row="1" Name="MainFrame" NavigationUIVisibility="Hidden" />
+        <Frame Grid.Row="1" Grid.Column="1"  Name="MainFrame" NavigationUIVisibility="Hidden" />
 
-        <StatusBar Grid.Row="2" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
+        <StatusBar Grid.Row="1" Grid.ColumnSpan="2"  Grid.RowSpan="2" VerticalAlignment="Bottom" MinHeight="25" Background="#292b2f">
             <StatusBarItem>
                 <TextBlock Text="Connection Status:" Foreground="White"  />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Name="ConnectionStatus"  Foreground="White" />
             </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Peer Name:" Foreground="White" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Name="PeerName"  Foreground="White" />
+            </StatusBarItem>
         </StatusBar>
 
+        <Grid Grid.Row="3" Grid.ColumnSpan="2">
+            <TextBox x:Name="PeerConsoleBox" Margin="10" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Foreground="White" Height="Auto"/>
+        </Grid>
     </Grid>
 </Window>

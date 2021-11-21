@@ -22,7 +22,7 @@ namespace crypcy.core
         {
 
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 23555);
-            Peer peer = new Peer(serverEndpoint);
+            Peer peer = new Peer(serverEndpoint, "LocalTest");
             peer.ConnectOrDisconnect();
 
             fileName = "blockchains.json";

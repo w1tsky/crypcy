@@ -44,7 +44,7 @@ namespace crypcy.stun
         static void UDPListen()
         {
             Console.WriteLine("UDP Listener Started");
-
+            UDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             while (true)
             {
                 byte[] ReceivedBytes = null;
@@ -151,25 +151,27 @@ namespace crypcy.stun
             {
                 PeerInfo peer = Peers.FirstOrDefault(x => x.ID == ((PeerInfo)peerItem).ID);
 
-                if (peer == null)
+                if (peer == null)  // Add peer to Peers List
                 {
                     peer = (PeerInfo)peerItem;
                     Peers.Add(peer);
 
+                    // Check if Peer has EndPoint
                     if (EP != null)
                         Console.WriteLine("Client Added: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
+                    // Check if Peer has TcpClient initialized
                     else if (peerTCP != null)
                         Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
-                else
+                else  // If peer exist update infromation about this peer
                 {
                     peer.Update((PeerInfo)peerItem);
-
-                    if (EP != null)
+                    if (EP != null) // Check if Peer has EndPoint
                         Console.WriteLine("Client Updated: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
-                    else if (peerTCP != null)
+                    else if (peerTCP != null) // Check if Peer has TcpClient initialized
                         Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
                 }
+
 
                 if (EP != null)
                     peer.ExternalEndpoint = EP;
@@ -189,28 +191,28 @@ namespace crypcy.stun
 
                     if (peer.PeerTCP != null & peer.ExternalEndpoint != null)
                     {
-                        foreach (PeerInfo p in Peers)
-                            SendUDP(p, peer.ExternalEndpoint);
+                        BroadcastUDP(peer);
 
                         peer.Initialized = true;
                     }
                 }
-            }
 
+            }
 
             else if (peerItem.GetType() == typeof(Message))
             {
                 Console.WriteLine("Message from {0}:{1}: {2}", UDPEndPoint.Address, UDPEndPoint.Port, ((Message)peerItem).Content);
             }
+
             else if (peerItem.GetType() == typeof(Req))
             {
-                Req R = (Req)peerItem;
+                Req r = (Req)peerItem;
 
-                PeerInfo peer = Peers.FirstOrDefault(x => x.ID == R.RecipientID);
+                PeerInfo peer = Peers.FirstOrDefault(p => p.ID == r.RecipientID);
 
                 if (peer != null)
                 {
-                    SendTCP(R, peer.PeerTCP);
+                    SendTCP(r, peer.PeerTCP);
                 }
             }
         }

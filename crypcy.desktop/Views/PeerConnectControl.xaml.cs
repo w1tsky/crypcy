@@ -2,6 +2,7 @@
 using crypcy.shared;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -28,11 +29,16 @@ namespace crypcy.desktop.Views
 
         List<PeerChatControl> PeerChats = new List<PeerChatControl>();
 
+        public ObservableCollection<PeerInfo> PeersList { get; set; }
+
+
         public PeerConnectControl(Peer peer)
         {
             InitializeComponent();
             Peer = peer;
-            lstPeers.ItemsSource = Peer.Peers;
+            PeersList = new ObservableCollection<PeerInfo>(Peer.Peers);
+
+            lstPeers.ItemsSource = PeersList;
 
             Peer.OnClientAdded += Peer_OnClientAdded;
             Peer.OnClientUpdated += Peer_OnClientUpdated;
@@ -45,7 +51,7 @@ namespace crypcy.desktop.Views
         {
             Dispatcher.Invoke(delegate
             {
-                lstPeers.Items.Add(e);
+                PeersList.Add(e);
             });
         }
 
@@ -53,9 +59,11 @@ namespace crypcy.desktop.Views
         {
             Dispatcher.Invoke(delegate
             {
-                foreach (PeerInfo peerInfo in lstPeers.Items)
+                PeersList.ToList().ForEach(peerInfo =>
+                {
                     if (peerInfo.ID == e.ID)
                         peerInfo.Update(e);
+                });
 
                 PeersListRefresh();
             });
@@ -65,15 +73,17 @@ namespace crypcy.desktop.Views
         {
             int i = -1;
 
-            foreach (PeerInfo peerInfo in lstPeers.Items)
+            PeersList.ToList().ForEach(peerInfo =>
+            {
                 if (peerInfo.ID == e.ID)
-                    i = lstPeers.Items.IndexOf(peerInfo);
+                    i = PeersList.IndexOf(peerInfo);
+            });
 
 
             Dispatcher.Invoke(delegate
             {
                 if (i != -1)
-                    lstPeers.Items.RemoveAt(i);
+                    PeersList.RemoveAt(i);
 
                 PeersListRefresh();
             });
@@ -88,33 +98,49 @@ namespace crypcy.desktop.Views
                 if (peerChat == null)
                 {
                     peerChat = new PeerChatControl(Peer, ((PeerInfo)sender).Name, ipEndPoint, ((PeerInfo)sender).ID);
-
                     PeerChats.Add(peerChat);
-                    PeerChatFrame.Navigate(peerChat);
-
-                }
-                else
-                {
-                    peerChat.Focus();
-                    peerChat.BringIntoView();
                 }
             });
         }
 
         private void lstPeers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            
             if (lstPeers.SelectedItem != null)
             {
                 PeerInfo peerInfo = (PeerInfo)lstPeers.SelectedItem;
+                PeerChatControl peerChat = PeerChats.FirstOrDefault(p => p.RemoteEP.Equals(peerInfo.ExternalEndpoint));
+                if (peerChat == null)
+                {
+                    peerChat = new PeerChatControl(Peer, peerInfo.Name, peerInfo.ExternalEndpoint, peerInfo.ID);
+                    PeerChatFrame.Navigate(peerChat);
+                }
+                else
+                {
+                    PeerChatFrame.Navigate(peerChat);
+                }
             }
         }
 
         private void btnConnectPeer_Click(object sender, RoutedEventArgs e)
         {
+            
             if (lstPeers.SelectedItem != null)
             {
                 PeerInfo peerInfo = (PeerInfo)lstPeers.SelectedItem;
-                Peer.ConnectToPeer(peerInfo);
+                PeerChatControl peerChat = PeerChats.FirstOrDefault(p => p.RemoteEP.Equals(peerInfo.ExternalEndpoint));
+                if (peerChat == null)
+                {
+                    peerChat = new PeerChatControl(Peer, peerInfo.Name, peerInfo.ExternalEndpoint, peerInfo.ID);
+                    Peer.ConnectToPeer(peerInfo);
+                    PeerChatFrame.Navigate(peerChat);
+                }
+                else
+                {
+                    PeerChatFrame.Navigate(peerChat);
+                }
+
+
             }
         }
 
@@ -122,8 +148,9 @@ namespace crypcy.desktop.Views
         {
             if (lstPeers.SelectedItem != null)
             {
-                lstPeers.ItemsSource = Peer.Peers;
-                PeerInfo peerInfo = (PeerInfo)lstPeers.SelectedItem;
+                PeersList.Clear();
+                PeersList = new ObservableCollection<PeerInfo>(Peer.Peers);
+                lstPeers.ItemsSource = PeersList;
             }
         }
     }

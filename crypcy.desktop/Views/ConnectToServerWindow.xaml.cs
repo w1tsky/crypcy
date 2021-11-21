@@ -20,6 +20,7 @@ namespace crypcy.desktop.Views
     /// </summary>
     public partial class ConnectToServerWindow : Window
     {
+        private string peerName;
         private IPAddress ipAddress;
         private IPEndPoint serverEndpoint;
 
@@ -33,6 +34,11 @@ namespace crypcy.desktop.Views
             get { return serverEndpoint; }
         }
 
+        public string PeerName
+        {
+            get { return peerName; }
+        }
+
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
@@ -44,6 +50,7 @@ namespace crypcy.desktop.Views
                 }
 
                 serverEndpoint = new IPEndPoint(address: ipAddress, port: int.Parse(PortBox.Text));
+                peerName = PeerNameBox.Text;
             }
             else
             {
@@ -51,7 +58,7 @@ namespace crypcy.desktop.Views
             }
 
             
-            MainWindow mw = new MainWindow(ServerEndpoint);
+            MainWindow mw = new MainWindow(ServerEndpoint, PeerName);
             mw.Show();
             this.Close();
         }
