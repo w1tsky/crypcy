@@ -14,6 +14,7 @@ namespace crypcy.shared
 
         public Notification(NotificationsTypes _Type, object _Tag)
         {
+            ID = this.ID;
             PeerItemType = PeerItemType.Notification;
             Type = _Type;
             Tag = _Tag;
@@ -63,10 +64,11 @@ namespace crypcy.shared
         public bool Responce { get; set; }
 
 
-        public Ack(long senderID)
+        public Ack(long senderID, long recipientID)
         {
             PeerItemType = PeerItemType.Ack;
             SenderID = senderID;
+            RecipientID = recipientID;
             ID = senderID;
         }
     }
@@ -76,9 +78,9 @@ namespace crypcy.shared
     {
         public KeepAlive()
         {
+
             PeerItemType = PeerItemType.KeepAlive;
         }
     }
-
 
 }

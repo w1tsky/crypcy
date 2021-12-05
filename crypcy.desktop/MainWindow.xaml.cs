@@ -27,14 +27,34 @@ namespace crypcy.desktop
         public static Peer Peer { get; set; }
         
 
-        public MainWindow(IPEndPoint serverEndpoint)
+        public MainWindow(IPEndPoint serverEndpoint, string peerName)
         {
             InitializeComponent();
-            Peer = new Peer(serverEndpoint);
+            Peer = new Peer(serverEndpoint, peerName);
             Peer.ConnectOrDisconnect();
 
+            Peer.OnResultsUpdate += Peer_OnResultsUpdate;
+  
+
+            
+
+
             ConnectionStatus.Text = "Connected";
+            PeerName.Text = peerName;
         }
+
+        private void Peer_OnResultsUpdate(object sender, string e)
+        {
+            Dispatcher.Invoke(delegate
+            {
+                PeerConsoleBox.Text += e + '\n';
+                PeerConsoleBox.CaretIndex = PeerConsoleBox.Text.Length;
+                PeerConsoleBox.ScrollToEnd();
+            });
+
+        }
+
+
 
         private void btnChat_Click(object sender, RoutedEventArgs e)
         {

@@ -15,12 +15,16 @@
 
     <Grid Background="#2c2f33">
 
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" MinHeight="200" MinWidth="400" VerticalAlignment="Center" >
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" MinHeight="300" MinWidth="400" VerticalAlignment="Center" >
+
             <Label Content="Connect to Server" Foreground="White" HorizontalAlignment="Left" FontSize="30" Margin="20"/>
+
+            <Label Content="Peer Name:" Foreground="White" HorizontalAlignment="Left"/>
+            <TextBox Name="PeerNameBox" Height="25"  Foreground="White"/>
             <Label Content="Server IP adress or hostname:" Foreground="White" HorizontalAlignment="Left"/>
-            <TextBox Name="AddressBox" Height="23"  Foreground="White"/>
+            <TextBox Name="AddressBox" Height="25"  Foreground="White"/>
             <Label  Content="Server Port:" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-            <TextBox Name="PortBox"  Height="23"    Foreground="White"/>
+            <TextBox Name="PortBox"  Height="25"    Foreground="White"/>
             <Button Content="Connect" HorizontalAlignment="Center"  Click="ConnectButton_Click" Margin="30"/>
         </StackPanel>
 
