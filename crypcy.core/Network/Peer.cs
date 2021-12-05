@@ -15,6 +15,7 @@ namespace crypcy.core
         private IPAddress InternetAccessAdapter;
         private TcpClient PeerTCP = new TcpClient();
         private UdpClient PeerUDP = new UdpClient();
+
         public PeerInfo LocalPeerInfo = new PeerInfo();
 
         public List<PeerInfo> Peers = new List<PeerInfo>();
@@ -59,7 +60,7 @@ namespace crypcy.core
             }
         }
 
-        public Peer(IPEndPoint serverEndpoint)
+        public Peer(IPEndPoint serverEndpoint, string peerName)
         {
             ServerEndpoint = serverEndpoint;
 
@@ -67,7 +68,7 @@ namespace crypcy.core
             PeerUDP.Client.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             PeerUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
-            LocalPeerInfo.Name = System.Environment.MachineName;
+            LocalPeerInfo.Name = peerName;
             LocalPeerInfo.ConnectionType = ConnectionTypes.Unknown;
             LocalPeerInfo.ID = DateTime.Now.Ticks;
             LocalPeerInfo.InternalAddresses.Add(GetAdapterWithInternetAccess());
@@ -90,8 +91,15 @@ namespace crypcy.core
                         if (EP != null)
                         {
                             byte[] ReceivedBytes = PeerUDP.Receive(ref EP);
+
+                            string jsonStr = Encoding.UTF8.GetString(ReceivedBytes);
+                            if (OnResultsUpdate != null)
+                                OnResultsUpdate.Invoke(this, "UDP received: " + jsonStr);
+
                             PeerItem Item = ReceivedBytes.ByteArrayToPeer(ReceivedBytes.Length);
                             ProcessItem(Item, EP);
+
+
                         }
                     }
                     catch (Exception e)
@@ -176,12 +184,8 @@ namespace crypcy.core
                     TCPListen = true;
 
                     SendMessageUDP(LocalPeerInfo.Simplified(), ServerEndpoint);
-
-
                     LocalPeerInfo.InternalEndpoint = (IPEndPoint)PeerUDP.Client.LocalEndPoint;
-
-                    Thread.Sleep(500);
-                    SendMessageTCP(LocalPeerInfo.Simplified());
+                    SendMessageTCP(LocalPeerInfo);
 
                     Thread KeepAlive = new Thread(new ThreadStart(delegate
                     {
@@ -216,7 +220,7 @@ namespace crypcy.core
                 try
                 {
                     string jsonStr = Encoding.UTF8.GetString(data);
-                    Console.WriteLine($"TCP Sending: {jsonStr}");
+                    System.Diagnostics.Debug.WriteLine($"TCP Sending: {jsonStr}");
 
                     NetworkStream NetStream = PeerTCP.GetStream();
                     NetStream.Write(data, 0, data.Length);
@@ -240,7 +244,7 @@ namespace crypcy.core
                 if (data != null)
                 {
                     string jsonStr = Encoding.UTF8.GetString(data);
-                    Console.WriteLine($"UDP Sending: {jsonStr}");
+                    System.Diagnostics.Debug.WriteLine($"UDP Sending: {jsonStr}");
 
                     PeerUDP.Send(data, data.Length, EP);
                 }
@@ -264,20 +268,8 @@ namespace crypcy.core
 
         private void ProcessItem(PeerItem peerItem, IPEndPoint EP = null)
         {
-            if (peerItem.GetType() == typeof(Message))
-            {
-                PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == peerItem.ID);
-                Message m = (Message)peerItem;
 
-                if (m.ID == 0)
-                    if (OnResultsUpdate != null)
-                        OnResultsUpdate.Invoke(this, m.From + ": " + m.Content);
-
-                if (m.ID != 0 & EP != null & peerInfo != null)
-                    if (OnMessageReceived != null)
-                        OnMessageReceived.Invoke(EP, new MessageReceivedEventArgs(peerInfo, m, EP));
-            }
-            else if (peerItem.GetType() == typeof(PeerInfo))
+            if (peerItem.GetType() == typeof(PeerInfo))
             {
                 PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == peerItem.ID);
                 if (peerInfo == null)
@@ -295,6 +287,20 @@ namespace crypcy.core
                         OnClientUpdated.Invoke(this, (PeerInfo)peerItem);
                 }
             }
+            else if (peerItem.GetType() == typeof(Message))
+            {
+                PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == peerItem.ID);
+                Message m = (Message)peerItem;
+
+                if (m.ID == 0)
+                    if (OnResultsUpdate != null)
+                        OnResultsUpdate.Invoke(this, m.From + ": " + m.Content);
+
+                if (m.ID != 0 & EP != null & peerInfo != null)
+                    if (OnMessageReceived != null)
+                        OnMessageReceived.Invoke(EP, new MessageReceivedEventArgs(peerInfo, m, EP));
+            }
+
             else if (peerItem.GetType() == typeof(Notification))
             {
                 Notification N = (Notification)peerItem;
@@ -354,7 +360,7 @@ namespace crypcy.core
                 else
                 {
                     PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == A.ID);
-
+                    //Internal Network
                     if (peerInfo.ExternalEndpoint.Address.Equals(EP.Address) & peerInfo.ExternalEndpoint.Port != EP.Port)
                     {
                         if (OnResultsUpdate != null)
@@ -391,7 +397,7 @@ namespace crypcy.core
             SendMessageTCP(R);
 
             if (OnResultsUpdate != null)
-                OnResultsUpdate.Invoke(this, "Sent Connection Request To: " + peerInfo.ToString());
+                OnResultsUpdate.Invoke(this, "Sent Connection Request To: " + peerInfo.Name);
 
             Thread Connect = new Thread(new ThreadStart(delegate
             {
@@ -427,59 +433,59 @@ namespace crypcy.core
 
         private IPEndPoint FindReachableEndpoint(PeerInfo peerInfo)
         {
-            if (OnResultsUpdate != null)
-                OnResultsUpdate.Invoke(this, "Attempting to Connect via LAN");
+            //if (OnResultsUpdate != null)
+            //    OnResultsUpdate.Invoke(this, "Attempting to Connect via LAN");
 
-            for (int ip = 0; ip < peerInfo.InternalAddresses.Count; ip++)
-            {
-                if (!PeerTCP.Connected)
-                    break;
+            //for (int ip = 0; ip < peerInfo.InternalAddresses.Count; ip++)
+            //{
+            //    if (!PeerTCP.Connected)
+            //        break;
 
-                IPAddress IP = peerInfo.InternalAddresses[ip];
+            //    IPAddress IP = peerInfo.InternalAddresses[ip];
 
-                IPEndPoint EP = new IPEndPoint(IP, peerInfo.InternalEndpoint.Port);
+            //    IPEndPoint EP = new IPEndPoint(IP, peerInfo.InternalEndpoint.Port);
 
-                for (int i = 1; i < 4; i++)
-                {
-                    if (!PeerTCP.Connected)
-                        break;
+            //    for (int i = 1; i < 4; i++)
+            //    {
+            //        if (!PeerTCP.Connected)
+            //            break;
 
-                    if (OnResultsUpdate != null)
-                        OnResultsUpdate.Invoke(this, "Sending Ack to " + EP.ToString() + ". Attempt " + i + " of 3");
+            //        if (OnResultsUpdate != null)
+            //            OnResultsUpdate.Invoke(this, "Sending Ack to " + EP.ToString() + ". Attempt " + i + " of 3");
 
-                    SendMessageUDP(new Ack(LocalPeerInfo.ID), EP);
-                    Thread.Sleep(200);
+            //        SendMessageUDP(new Ack(LocalPeerInfo.ID), EP);
+            //        Thread.Sleep(200);
 
-                    Ack Responce = AckResponces.FirstOrDefault(a => a.RecipientID == peerInfo.ID);
+            //        Ack Responce = AckResponces.FirstOrDefault(a => a.RecipientID == peerInfo.ID);
 
-                    if (Responce != null)
-                    {
-                        if (OnResultsUpdate != null)
-                            OnResultsUpdate.Invoke(this, "Received Ack Responce from " + EP.ToString());
+            //        if (Responce != null)
+            //        {
+            //            if (OnResultsUpdate != null)
+            //                OnResultsUpdate.Invoke(this, "Received Ack Responce from " + EP.ToString());
 
-                        peerInfo.ConnectionType = ConnectionTypes.LAN;
+            //            peerInfo.ConnectionType = ConnectionTypes.LAN;
 
-                        AckResponces.Remove(Responce);
+            //            AckResponces.Remove(Responce);
 
-                        return EP;
-                    }
-                }
-            }
+            //            return EP;
+            //        }
+            //    }
+            //}
 
             if (peerInfo.ExternalEndpoint != null)
             {
                 if (OnResultsUpdate != null)
                     OnResultsUpdate.Invoke(this, "Attempting to Connect via Internet");
 
-                for (int i = 1; i < 100; i++)
+                for (int i = 1; i < 11; i++)
                 {
                     if (!PeerTCP.Connected)
                         break;
 
                     if (OnResultsUpdate != null)
-                        OnResultsUpdate.Invoke(this, "Sending Ack to " + peerInfo.ExternalEndpoint + ". Attempt " + i + " of 99");
+                        OnResultsUpdate.Invoke(this, "Sending Ack to " + peerInfo.ExternalEndpoint + ". Attempt " + i + " of 10");
 
-                    SendMessageUDP(new Ack(LocalPeerInfo.ID), peerInfo.ExternalEndpoint);
+                    SendMessageUDP(new Ack(LocalPeerInfo.ID, peerInfo.ID), peerInfo.ExternalEndpoint);
                     Thread.Sleep(300);
 
                     Ack Responce = AckResponces.FirstOrDefault(a => a.RecipientID == peerInfo.ID);
