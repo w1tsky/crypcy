@@ -149,55 +149,54 @@ namespace crypcy.stun
         {
             if (peerItem.GetType() == typeof(PeerInfo))
             {
-                PeerInfo peer = Peers.FirstOrDefault(x => x.ID == ((PeerInfo)peerItem).ID);
+                PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == ((PeerInfo)peerItem).ID);
 
-                if (peer == null)  // Add peer to Peers List
+                if (peerInfo == null)  // Add peer to Peers List
                 {
-                    peer = (PeerInfo)peerItem;
-                    Peers.Add(peer);
+                    peerInfo = (PeerInfo)peerItem;
+                    Peers.Add(peerInfo);
 
                     // Check if Peer has EndPoint
                     if (EP != null)
-                        Console.WriteLine("Client Added: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
+                        Console.WriteLine("Client Added: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peerInfo.Name);
                     // Check if Peer has TcpClient initialized
                     else if (peerTCP != null)
-                        Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
+                        Console.WriteLine("Client Added: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peerInfo.Name);
                 }
                 else  // If peer exist update infromation about this peer
                 {
-                    peer.Update((PeerInfo)peerItem);
+                    peerInfo.Update((PeerInfo)peerItem);
                     if (EP != null) // Check if Peer has EndPoint
-                        Console.WriteLine("Client Updated: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peer.Name);
+                        Console.WriteLine("Client Updated: UDP EP: {0}:{1}, Name: {2}", EP.Address, EP.Port, peerInfo.Name);
                     else if (peerTCP != null) // Check if Peer has TcpClient initialized
-                        Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peer.Name);
+                        Console.WriteLine("Client Updated: TCP EP: {0}:{1}, Name: {2}", ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Address, ((IPEndPoint)peerTCP.Client.RemoteEndPoint).Port, peerInfo.Name);
                 }
-
 
                 if (EP != null)
-                    peer.ExternalEndpoint = EP;
+                    peerInfo.ExternalEndpoint = EP;
 
                 if (peerTCP != null)
-                    peer.PeerTCP = peerTCP;
+                    peerInfo.PeerTCP = peerTCP;
 
-                BroadcastTCP(peer);
+                BroadcastTCP(peerInfo);
 
-                if (!peer.Initialized)
+                if (!peerInfo.Initialized)
                 {
-                    if (peer.ExternalEndpoint != null & Protocol == ProtocolType.Udp)
-                        SendUDP(new Message("Server", peer.Name, "UDP Communication Test"), peer.ExternalEndpoint);
+                    if (peerInfo.ExternalEndpoint != null & Protocol == ProtocolType.Udp)
+                        SendUDP(new Message("Server", peerInfo.Name, "UDP Communication Test"), peerInfo.ExternalEndpoint);
 
-                    if (peer.PeerTCP != null & Protocol == ProtocolType.Tcp)
-                        SendTCP(new Message("Server", peer.Name, "TCP Communication Test"), peer.PeerTCP);
+                    if (peerInfo.PeerTCP != null & Protocol == ProtocolType.Tcp)
+                        SendTCP(new Message("Server", peerInfo.Name, "TCP Communication Test"), peerInfo.PeerTCP);
 
-                    if (peer.PeerTCP != null & peer.ExternalEndpoint != null)
+                    if (peerInfo.PeerTCP != null & peerInfo.ExternalEndpoint != null)
                     {
-                        foreach(PeerInfo peerInfo in Peers)
-                            SendUDP(peerInfo, peer.ExternalEndpoint);
+                        foreach(PeerInfo p in Peers)
+                            SendUDP(peerInfo, peerInfo.ExternalEndpoint);
 
-                        peer.Initialized = true;
+                        peerInfo.Initialized = true;
                     }
                 }
-
+                
             }
 
             else if (peerItem.GetType() == typeof(Message))

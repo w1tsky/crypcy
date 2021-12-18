@@ -10,14 +10,14 @@ namespace crypcy.shared
     {
 
         public NotificationsTypes Type { get; set; }
-        public object Tag { get; set; }
+       public long PeerID { get; set; }
 
-        public Notification(NotificationsTypes _Type, object _Tag)
+        public Notification(NotificationsTypes type, long peerID)
         {
             ID = this.ID;
             PeerItemType = PeerItemType.Notification;
-            Type = _Type;
-            Tag = _Tag;
+            Type = type;
+            PeerID = peerID;
         }
     }
 

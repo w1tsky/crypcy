@@ -133,6 +133,10 @@ namespace crypcy.core
                             break;
                         else
                         {
+                            string jsonStr = Encoding.UTF8.GetString(ReceivedBytes);
+                            if (OnResultsUpdate != null)
+                                OnResultsUpdate.Invoke(this, "TCP received: " + jsonStr);
+
                             PeerItem peerItem = ReceivedBytes.ByteArrayToPeer(BytesRead);
                             ProcessItem(peerItem);
                         }
@@ -307,7 +311,7 @@ namespace crypcy.core
 
                 if (N.Type == NotificationsTypes.Disconnected)
                 {
-                    PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == long.Parse(N.Tag.ToString()));
+                    PeerInfo peerInfo = Peers.FirstOrDefault(x => x.ID == long.Parse(N.ID.ToString()));
 
                     if (peerInfo != null)
                     {
