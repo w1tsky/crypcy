@@ -179,7 +179,8 @@ namespace crypcy.stun
                 if (peerTCP != null)
                     peer.PeerTCP = peerTCP;
 
-                BroadcastTCP(peer);
+                foreach(PeerInfo peerInfo in Peers)
+                    BroadcastTCP(peerInfo);
 
                 if (!peer.Initialized)
                 {
@@ -191,7 +192,8 @@ namespace crypcy.stun
 
                     if (peer.PeerTCP != null & peer.ExternalEndpoint != null)
                     {
-                        BroadcastUDP(peer);
+                        foreach(PeerInfo peerInfo in Peers)
+                            BroadcastUDP(peerInfo);
 
                         peer.Initialized = true;
                     }
