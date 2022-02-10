@@ -10,14 +10,12 @@ namespace crypcy.shared
     {
 
         public NotificationsTypes Type { get; set; }
-       public long PeerID { get; set; }
 
         public Notification(NotificationsTypes type, long peerID)
         {
-            ID = this.ID;
             PeerItemType = PeerItemType.Notification;
             Type = type;
-            PeerID = peerID;
+            ID = peerID;
         }
     }
 
@@ -78,7 +76,6 @@ namespace crypcy.shared
     {
         public KeepAlive()
         {
-
             PeerItemType = PeerItemType.KeepAlive;
         }
     }
