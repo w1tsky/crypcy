@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using crypcy.shared;
+using static PeerTCP;
 
 namespace crypcy.stun
 {
@@ -16,7 +17,6 @@ namespace crypcy.stun
         static UdpClient UDP = new UdpClient(UDPEndPoint);
 
         static IPEndPoint TCPEndPoint = new IPEndPoint(IPAddress.Any, Port);
-        static TcpListener TCP = new TcpListener(TCPEndPoint);
         static List<PeerInfo> Peers = new List<PeerInfo>();
 
         static void Main(string[] args)
@@ -74,62 +74,15 @@ namespace crypcy.stun
 
         static void TCPListen()
         {
-            TCP.Start();
+            PeerTCP newPeer = new PeerTCP(TCPEndPoint, false);
 
             Console.WriteLine("TCP Listener Started");
 
-            while (true)
-            {
-                try
-                {
-                    TcpClient NewPeer = TCP.AcceptTcpClient();
+            newPeer.StartListenAsync();
+            newPeer.OnPeerItemReceived += (sender, peer) => ProcessItem(peer.HadleTcpClient(), ProtocolType.Tcp, null, peer.PeerTcpClient);
 
-                    Action<object> ProcessData = new Action<object>(delegate (object _peer)
-                    {
-                        TcpClient Peer = (TcpClient)_peer;
-                        Peer.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-
-                        byte[] Data = new byte[4096];
-                        int BytesRead = 0;
-
-                        while (Peer.Connected)
-                        {
-                            try
-                            {
-                                BytesRead = Peer.GetStream().Read(Data, 0, Data.Length);
-                            }
-                            catch
-                            {
-                                Disconnect(Peer);
-                            }
-
-                            if (BytesRead == 0)
-
-                                break;
-                            else if (Peer.Connected)
-                            {
-
-                                string jsonStr = Encoding.UTF8.GetString(Data, 0, BytesRead);
-                                Console.WriteLine("TCP received {0}:", jsonStr);
-
-                                PeerItem peerItem = Data.ByteArrayToPeer(BytesRead);
-
-                                ProcessItem(peerItem, ProtocolType.Tcp, null, Peer);
-                            }
-                        }
-
-                        Disconnect(Peer);
-                    });
-
-                    Thread ThreadProcessData = new Thread(new ParameterizedThreadStart(ProcessData));
-                    ThreadProcessData.Start(NewPeer);
-                }
-                catch (Exception ex)
-                {
-                    Console.Write("TCP Error: {0}", ex.Message);
-                }
-            }
         }
+
 
         static void Disconnect(TcpClient peerTCP)
         {
@@ -145,7 +98,7 @@ namespace crypcy.stun
             }
         }
 
-        static void ProcessItem(PeerItem peerItem, ProtocolType Protocol, IPEndPoint EP = null, TcpClient peerTCP = null)
+        public static void ProcessItem(PeerItem peerItem, ProtocolType Protocol, IPEndPoint EP = null, TcpClient peerTCP = null)
         {
             if (peerItem.GetType() == typeof(PeerInfo))
             {
@@ -190,13 +143,13 @@ namespace crypcy.stun
 
                     if (peerInfo.PeerTCP != null & peerInfo.ExternalEndpoint != null)
                     {
-                        foreach(PeerInfo p in Peers)
+                        foreach (PeerInfo p in Peers)
                             SendUDP(peerInfo, peerInfo.ExternalEndpoint);
 
                         peerInfo.Initialized = true;
                     }
                 }
-                
+
             }
 
             else if (peerItem.GetType() == typeof(Message))

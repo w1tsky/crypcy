@@ -64,6 +64,8 @@ namespace crypcy.core
         {
             ServerEndpoint = serverEndpoint;
 
+            PeerTCP.NoDelay = true;
+
             PeerUDP.AllowNatTraversal(true);
             PeerUDP.Client.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             PeerUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
@@ -225,7 +227,6 @@ namespace crypcy.core
                 {
                     string jsonStr = Encoding.UTF8.GetString(data);
                     System.Diagnostics.Debug.WriteLine($"TCP Sending: {jsonStr}");
-
                     NetworkStream NetStream = PeerTCP.GetStream();
                     NetStream.Write(data, 0, data.Length);
                 }

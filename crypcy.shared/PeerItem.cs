@@ -9,6 +9,12 @@ namespace crypcy.shared
         Ack,
         KeepAlive
     }
+
+    public class PeerHeader
+    {
+        public uint Length { get; set; }
+
+    }
     public class PeerItem
     {
         public long ID { get; set; }
